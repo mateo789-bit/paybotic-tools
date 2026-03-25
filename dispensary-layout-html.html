@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Paybotic Dispensary Layout Planner</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f6f9; min-height: 100vh; }
+  #header {
+    background: #244d74; padding: 16px 28px;
+    display: flex; align-items: center; gap: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.18); flex-wrap: wrap;
+  }
+  .brand-name { color: #f5861f; font-weight: 800; font-size: 20px; letter-spacing: 0.05em; }
+  .brand-sub { color: rgba(255,255,255,0.6); font-size: 11px; letter-spacing: 0.1em; }
+  .header-divider { width: 1px; height: 36px; background: rgba(255,255,255,0.2); margin: 0 8px; }
+  .header-title { color: #fff; font-weight: 700; font-size: 16px; }
+  .header-sub { color: rgba(255,255,255,0.6); font-size: 12px; margin-top: 2px; }
+  #progress { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+  .prog-step { display: flex; align-items: center; gap: 6px; }
+  .prog-dot {
+    width: 26px; height: 26px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; color: #fff;
+    background: rgba(255,255,255,0.2);
+  }
+  .prog-dot.active { background: #f5861f; }
+  .prog-dot.done { background: #f5861f; }
+  .prog-label { color: rgba(255,255,255,0.5); font-size: 12px; }
+  .prog-label.active { color: #fff; font-weight: 700; }
+  .prog-line { width: 24px; height: 1px; background: rgba(255,255,255,0.25); }
+  #app { padding: 20px; }
+  .step { display: none; }
+  .step.active { display: block; }
+  #step-design .grid {
+    display: grid;
+    grid-template-columns: 270px 1fr 250px;
+    gap: 16px; max-width: 1440px; margin: 0 auto;
+  }
+  .card {
+    background: #fff; border-radius: 16px; padding: 20px;
+    box-shadow: 0 2px 12px rgba(36,77,116,0.10);
+  }
+  .section-title {
+    font-weight: 700; color: #244d74; font-size: 12px;
+    text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 14px;
+  }
+  label.field-label {
+    font-size: 11px; font-weight: 700; color: #244d74;
+    text-transform: uppercase; letter-spacing: 0.04em;
+    display: block; margin-bottom: 5px; margin-top: 10px;
+  }
+  input[type=number], input[type=text], input[type=email], input[type=tel] {
+    width: 100%; padding: 9px 12px; border-radius: 8px;
+    border: 1.5px solid #d5d5d5; font-size: 14px; color: #1a2535;
+    font-family: inherit; outline: none; transition: border 0.15s;
+  }
+  input:focus { border-color: #244d74; }
+  .tabs { display: flex; gap: 6px; margin-bottom: 12px; }
+  .tab-btn {
+    flex: 1; padding: 7px; border-radius: 8px; border: none;
+    cursor: pointer; font-size: 12px; font-weight: 600;
+    background: #f4f6f9; color: #64748b; transition: all 0.15s;
+  }
+  .tab-btn.active { background: #244d74; color: #fff; }
+  .fixture-btn {
+    width: 100%; padding: 9px 12px; border-radius: 10px;
+    border: 1.5px solid transparent; cursor: pointer;
+    text-align: left; display: flex; align-items: center; gap: 10px;
+    margin-bottom: 6px; transition: border-color 0.15s; font-family: inherit;
+  }
+  .fixture-btn:hover { opacity: 0.85; }
+  .fixture-icon { font-size: 18px; pointer-events: none; }
+  .fixture-name { font-size: 12px; font-weight: 600; color: #1a2535; pointer-events: none; }
+  .fixture-dims { font-size: 11px; color: #64748b; pointer-events: none; }
+  .fixture-plus { margin-left: auto; font-weight: 700; font-size: 16px; pointer-events: none; }
+  .stat-row {
+    display: flex; justify-content: space-between;
+    padding: 8px 0; border-bottom: 1px solid #f4f6f9; font-size: 13px;
+  }
+  .stat-label { color: #64748b; }
+  .stat-val { font-weight: 700; color: #244d74; }
+  .btn-primary {
+    background: #f5861f; color: #fff; border: none;
+    border-radius: 10px; padding: 12px 20px; cursor: pointer;
+    font-weight: 700; font-size: 14px; width: 100%;
+    font-family: inherit; transition: background 0.15s;
+  }
+  .btn-primary:hover { background: #e07618; }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-secondary {
+    background: transparent; color: #244d74;
+    border: 1.5px solid #244d74; border-radius: 10px;
+    padding: 10px 20px; cursor: pointer; font-weight: 600;
+    font-size: 13px; width: 100%; font-family: inherit; transition: all 0.15s;
+  }
+  .btn-secondary:hover { background: #f0f5fa; }
+  .btn-danger {
+    background: transparent; color: #ef4444;
+    border: 1.5px solid #ef4444; border-radius: 10px;
+    padding: 10px 20px; cursor: pointer; font-weight: 600;
+    font-size: 13px; width: 100%; font-family: inherit;
+  }
+  #canvas-wrap { overflow: auto; }
+  #canvas-meta { display: flex; gap: 16px; font-size: 11px; color: #64748b; margin-bottom: 8px; }
+  #room-canvas {
+    position: relative;
+    border: 2px solid rgba(36,77,116,0.2);
+    border-radius: 10px;
+    background-color: #fafcff;
+    background-image:
+      linear-gradient(to right, rgba(36,77,116,0.09) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(36,77,116,0.09) 1px, transparent 1px);
+    background-size: 20px 20px;
+    cursor: default; flex-shrink: 0; user-select: none;
+  }
+  .room-lbl {
+    position: absolute; top: 6px; right: 10px;
+    font-size: 11px; color: #244d74; opacity: 0.45; pointer-events: none;
+  }
+  #canvas-empty {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; pointer-events: none;
+  }
+  #canvas-empty .ei { font-size: 40px; opacity: 0.25; margin-bottom: 8px; }
+  #canvas-empty .et { color: #64748b; font-size: 14px; opacity: 0.5; }
+  .fixture-item {
+    position: absolute; border-radius: 8px; cursor: grab;
+    padding: 4px; overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08); user-select: none;
+  }
+  .fixture-item.selected {
+    box-shadow: 0 0 0 3px rgba(245,134,31,0.3), 0 2px 8px rgba(0,0,0,0.15) !important;
+    outline: 2px solid #f5861f;
+  }
+  .f-icon { font-size: 13px; line-height: 1; pointer-events: none; }
+  .f-name { font-size: 9px; font-weight: 700; color: #1a2535; line-height: 1.2; margin-top: 2px; pointer-events: none; }
+  .f-size { font-size: 8px; color: #64748b; pointer-events: none; }
+  #props-empty { text-align: center; padding: 30px 10px; }
+  #props-empty .pe-icon { font-size: 36px; margin-bottom: 10px; }
+  #props-empty p { color: #64748b; font-size: 13px; }
+  #props-form { display: none; }
+  .props-preview {
+    padding: 10px; border-radius: 10px; text-align: center;
+    margin-bottom: 12px; border: 1.5px solid rgba(0,0,0,0.08);
+  }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .info-box {
+    padding: 10px; background: #f4f6f9; border-radius: 8px;
+    font-size: 12px; color: #64748b; margin: 10px 0;
+    display: flex; flex-direction: column; gap: 3px;
+  }
+  .prop-btns { display: flex; flex-direction: column; gap: 6px; margin-top: 14px; }
+  .tip-box {
+    margin-top: 14px; padding: 12px; background: #fff7ed;
+    border-radius: 10px; border: 1px solid rgba(245,134,31,0.3);
+  }
+  .tip-title { font-size: 11px; font-weight: 700; color: #f5861f; margin-bottom: 4px; }
+  .tip-text { font-size: 11px; color: #92400e; }
+  .alert-box {
+    padding: 12px; background: #fff7ed; border-radius: 8px;
+    border: 1px solid rgba(245,134,31,0.35); font-size: 12px;
+    color: #92400e; margin-top: 12px; display: none;
+  }
+  #step-details .inner, #step-contact .inner { max-width: 860px; margin: 28px auto; }
+  #step-contact .inner { max-width: 540px; }
+  .summary-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 24px; }
+  .stat-card { padding: 16px; background: #f4f6f9; border-radius: 12px; text-align: center; }
+  .stat-card-icon { font-size: 24px; margin-bottom: 6px; }
+  .stat-card-val { font-weight: 800; font-size: 18px; color: #244d74; }
+  .stat-card-label { font-size: 12px; color: #64748b; }
+  #fixture-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 20px; }
+  .fixture-list-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.07);
+  }
+  .fli-badge {
+    margin-left: auto; font-size: 11px; background: #f5861f;
+    color: #fff; border-radius: 6px; padding: 2px 8px; font-weight: 700; white-space: nowrap;
+  }
+  .step-btns { display: flex; gap: 12px; }
+  .step-btns .btn-primary, .step-btns .btn-secondary { flex: 1; }
+  .contact-header { text-align: center; margin-bottom: 24px; }
+  .contact-header h2 { font-weight: 800; font-size: 22px; color: #244d74; }
+  .contact-header p { color: #64748b; font-size: 14px; margin-top: 6px; }
+  .trust-box {
+    padding: 12px 14px; background: #f4f6f9; border-radius: 10px;
+    font-size: 12px; color: #64748b; margin: 16px 0; display: flex; gap: 8px;
+  }
+  .perks { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+  .perk { font-size: 13px; color: #1a2535; }
+  #step-done .inner { max-width: 520px; margin: 60px auto; text-align: center; }
+  .done-card { padding: 36px; }
+  .done-card h2 { font-weight: 800; font-size: 24px; color: #244d74; margin-bottom: 8px; }
+  .done-card p { color: #64748b; font-size: 14px; margin-bottom: 24px; }
+  .done-summary { padding: 20px; background: #f4f6f9; border-radius: 12px; margin-bottom: 24px; text-align: left; }
+  .done-summary h4 { font-weight: 700; color: #244d74; margin-bottom: 12px; font-size: 14px; }
+  .ds-row { display: flex; justify-content: space-between; padding: 5px 0; font-size: 13px; }
+  .ds-label { color: #64748b; }
+  .ds-val { font-weight: 600; color: #1a2535; }
+  input[type=range] { width: 100%; accent-color: #244d74; margin-top: 6px; }
+  .rotation-row { display: flex; justify-content: space-between; align-items: center; }
+  .rotation-val { font-size: 12px; font-weight: 600; color: #244d74; }
+  @media (max-width: 900px) {
+    #step-design .grid { grid-template-columns: 1fr; }
+    .summary-stats { grid-template-columns: repeat(2,1fr); }
+  }
+</style>
+</head>
+<body>
+
+<div id="header">
+  <div>
+    <div class="brand-name">PAYBOTIC</div>
+    <div class="brand-sub">FINANCIAL</div>
+  </div>
+  <div class="header-divider"></div>
+  <div>
+    <div class="header-title">Dispensary Layout Planner</div>
+    <div class="header-sub">Design your store · Get a free payment consultation</div>
+  </div>
+  <div id="progress">
+    <div class="prog-step">
+      <div class="prog-dot active" id="pdot-1">1</div>
+      <span class="prog-label active" id="plabel-1">Design</span>
+    </div>
+    <div class="prog-line"></div>
+    <div class="prog-step">
+      <div class="prog-dot" id="pdot-2">2</div>
+      <span class="prog-label" id="plabel-2">Review</span>
+    </div>
+    <div class="prog-line"></div>
+    <div class="prog-step">
+      <div class="prog-dot" id="pdot-3">3</div>
+      <span class="prog-label" id="plabel-3">Get Report</span>
+    </div>
+  </div>
+</div>
+
+<div id="app">
+
+  <!-- STEP 1: DESIGN -->
+  <div id="step-design" class="step active">
+    <div class="grid">
+
+      <!-- LEFT PANEL -->
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div class="card">
+          <div class="section-title">📐 Room Dimensions</div>
+          <label class="field-label" for="roomW">Width (ft)</label>
+          <input type="number" id="roomW" min="10" value="40"/>
+          <label class="field-label" for="roomH">Depth (ft)</label>
+          <input type="number" id="roomH" min="10" value="25"/>
+          <div style="margin-top:12px;padding:10px;background:#f4f6f9;border-radius:8px;display:flex;justify-content:space-between;">
+            <span style="font-size:13px;color:#64748b;">Total Area</span>
+            <span id="stat-total-area" style="font-size:13px;font-weight:700;color:#244d74;">1000 sq ft</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-title">🏪 Fixture Library</div>
+          <div class="tabs">
+            <button class="tab-btn active" id="tab-store">Store</button>
+            <button class="tab-btn" id="tab-payment">💳 Payment</button>
+          </div>
+          <div id="fixture-store"></div>
+          <div id="fixture-payment" style="display:none;"></div>
+        </div>
+
+        <div class="card">
+          <div class="section-title">📊 Quick Stats</div>
+          <div class="stat-row"><span class="stat-label">Total Area</span><span class="stat-val" id="qs-area">1000 sq ft</span></div>
+          <div class="stat-row"><span class="stat-label">Fixtures Placed</span><span class="stat-val" id="qs-count">0</span></div>
+          <div class="stat-row"><span class="stat-label">Fixture Footprint</span><span class="stat-val" id="qs-footprint">0.0 sq ft</span></div>
+          <div class="stat-row"><span class="stat-label">Open Floor</span><span class="stat-val" id="qs-open">1000.0 sq ft</span></div>
+          <div class="alert-box" id="no-payment-tip">💡 <strong>Tip:</strong> Add an ATM/Kiosk, Checkout, or Payment Terminal to optimize your payment flow!</div>
+        </div>
+
+        <button class="btn-primary" id="btn-to-review" disabled>Add fixtures to continue →</button>
+        <button class="btn-secondary" id="btn-clear" style="width:100%;padding:10px;">Clear Layout</button>
+      </div>
+
+      <!-- CANVAS -->
+      <div class="card" id="canvas-wrap">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+          <div>
+            <div style="font-weight:700;color:#244d74;font-size:15px;">Planning Canvas</div>
+            <div style="color:#64748b;font-size:12px;margin-top:2px;">Drag fixtures onto your floor plan · Click to select &amp; edit</div>
+          </div>
+        </div>
+        <div id="canvas-meta">
+          <span>Grid: 1 cell ≈ 1.4 ft</span>
+          <span id="canvas-dims-label">Room: 40 ft × 25 ft</span>
+        </div>
+        <div id="room-canvas">
+          <div class="room-lbl" id="room-label">40 ft × 25 ft</div>
+          <div id="canvas-empty">
+            <div class="ei">🏪</div>
+            <div class="et">Add fixtures from the panel to get started</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROPERTIES -->
+      <div class="card">
+        <div class="section-title">⚙️ Properties</div>
+        <div id="props-empty">
+          <div class="pe-icon">👆</div>
+          <p>Click any fixture on the canvas to edit it</p>
+        </div>
+        <div id="props-form">
+          <div class="props-preview" id="props-preview">
+            <div style="font-size:28px;" id="pp-icon">📦</div>
+            <div style="font-weight:700;font-size:13px;color:#1a2535;margin-top:4px;" id="pp-label">Fixture</div>
+          </div>
+          <label class="field-label">Label</label>
+          <input type="text" id="prop-label" style="margin-bottom:10px;"/>
+          <div class="row2">
+            <div>
+              <label class="field-label">Width (ft)</label>
+              <input type="number" id="prop-w" step="0.5" min="1"/>
+            </div>
+            <div>
+              <label class="field-label">Depth (ft)</label>
+              <input type="number" id="prop-h" step="0.5" min="1"/>
+            </div>
+          </div>
+          <div style="margin-top:12px;">
+            <div class="rotation-row">
+              <label class="field-label" style="margin:0;">Rotation</label>
+              <span class="rotation-val" id="rot-val">0°</span>
+            </div>
+            <input type="range" id="prop-rot" min="0" max="355" step="5"/>
+          </div>
+          <div class="info-box">
+            <div id="prop-pos">📍 Position: — ft, — ft</div>
+            <div id="prop-foot">📐 Footprint: — sq ft</div>
+          </div>
+          <div class="prop-btns">
+            <button class="btn-secondary" id="btn-rotate">↻ Rotate 90°</button>
+            <button class="btn-secondary" id="btn-duplicate">⧉ Duplicate</button>
+            <button class="btn-danger" id="btn-delete">🗑 Delete</button>
+          </div>
+          <div class="tip-box" id="payment-tip" style="display:none;">
+            <div class="tip-title">💳 PAYBOTIC TIP</div>
+            <div class="tip-text" id="payment-tip-text"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- STEP 2: DETAILS -->
+  <div id="step-details" class="step">
+    <div class="inner">
+      <div class="card">
+        <div style="text-align:center;margin-bottom:28px;">
+          <div style="font-size:40px;margin-bottom:8px;">🏪</div>
+          <div style="font-weight:800;font-size:22px;color:#244d74;">Your Layout Summary</div>
+          <div style="color:#64748b;font-size:14px;margin-top:4px;">Review your design before getting your free consultation</div>
+        </div>
+        <div class="summary-stats">
+          <div class="stat-card"><div class="stat-card-icon">📐</div><div class="stat-card-val" id="sum-size">—</div><div class="stat-card-label">Room Size</div></div>
+          <div class="stat-card"><div class="stat-card-icon">🏢</div><div class="stat-card-val" id="sum-area">—</div><div class="stat-card-label">Total Area</div></div>
+          <div class="stat-card"><div class="stat-card-icon">📦</div><div class="stat-card-val" id="sum-count">—</div><div class="stat-card-label">Fixtures</div></div>
+          <div class="stat-card"><div class="stat-card-icon">🚶</div><div class="stat-card-val" id="sum-open">—</div><div class="stat-card-label">Open Floor</div></div>
+        </div>
+        <div style="font-weight:700;color:#244d74;margin-bottom:10px;">Fixture List</div>
+        <div id="fixture-list"></div>
+        <div class="alert-box" id="details-no-payment" style="margin-bottom:20px;">
+          💡 <strong>Paybotic Recommendation:</strong> Your layout doesn't include a payment terminal or ATM yet. Dispensaries with integrated payment solutions see significantly higher transaction volumes. Ask us about our compliant, cannabis-friendly payment options!
+        </div>
+        <div class="step-btns">
+          <button class="btn-secondary" id="btn-back-design">← Back to Design</button>
+          <button class="btn-primary" id="btn-to-contact" style="flex:2;">Get My Free Consultation →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3: CONTACT -->
+  <div id="step-contact" class="step">
+    <div class="inner">
+      <div class="card">
+        <div class="contact-header">
+          <div style="font-size:40px;margin-bottom:8px;">📋</div>
+          <h2>Get Your Free Layout Report</h2>
+          <p>A Paybotic specialist will review your layout and recommend the best payment solutions for your dispensary — completely free.</p>
+        </div>
+        <label class="field-label">Business Name</label>
+        <input type="text" id="c-business" placeholder="Green Leaf Dispensary" style="margin-bottom:10px;"/>
+        <label class="field-label">Your Name *</label>
+        <input type="text" id="c-name" placeholder="Jane Smith" style="margin-bottom:10px;"/>
+        <label class="field-label">Email Address *</label>
+        <input type="email" id="c-email" placeholder="jane@dispensary.com" style="margin-bottom:10px;"/>
+        <label class="field-label">Phone Number</label>
+        <input type="tel" id="c-phone" placeholder="(555) 000-0000" style="margin-bottom:10px;"/>
+        <div class="trust-box">
+          <span>🔒</span>
+          <span>Your information is secure. Paybotic only uses your details to provide your free consultation. No spam, ever.</span>
+        </div>
+        <div class="perks">
+          <div class="perk">✅ Personalized payment flow recommendations</div>
+          <div class="perk">✅ Compliant ATM &amp; kiosk placement guidance</div>
+          <div class="perk">✅ Cannabis-friendly banking solutions overview</div>
+          <div class="perk">✅ Free follow-up with a Paybotic specialist</div>
+        </div>
+        <div class="step-btns">
+          <button class="btn-secondary" id="btn-back-details">← Back</button>
+          <button class="btn-primary" id="btn-submit" style="flex:2;">Send Me My Report →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 4: DONE -->
+  <div id="step-done" class="step">
+    <div class="inner">
+      <div class="card done-card">
+        <div style="font-size:56px;margin-bottom:12px;">🎉</div>
+        <h2>You're all set, <span id="done-name">there</span>!</h2>
+        <p>A Paybotic specialist will reach out to <strong id="done-email">you</strong> within 1 business day with your personalized layout report and payment solution recommendations.</p>
+        <div class="done-summary">
+          <h4>Your Layout at a Glance</h4>
+          <div class="ds-row"><span class="ds-label">Room Size</span><span class="ds-val" id="ds-size">—</span></div>
+          <div class="ds-row"><span class="ds-label">Total Area</span><span class="ds-val" id="ds-area">—</span></div>
+          <div class="ds-row"><span class="ds-label">Fixtures</span><span class="ds-val" id="ds-count">—</span></div>
+          <div class="ds-row"><span class="ds-label">Business</span><span class="ds-val" id="ds-biz">—</span></div>
+        </div>
+        <div class="step-btns">
+          <a href="https://paybotic.com" target="_blank" rel="noopener" class="btn-primary" style="display:block;text-align:center;text-decoration:none;flex:1;">Visit Paybotic.com →</a>
+          <button class="btn-secondary" id="btn-start-over" style="flex:1;">Start New Layout</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function() {
+  var GRID = 20, PPF = 14;
+  var FIXTURES = [
+    { type:"display",   label:"Display Case",        width:6,  height:2.5, icon:"🪟", color:"#e8f4fd", border:"#244d74",  payment:false },
+    { type:"shelving",  label:"Gondola Shelving",     width:4,  height:2,   icon:"📦", color:"#f0fdf4", border:"#22c55e",  payment:false },
+    { type:"waiting",   label:"Waiting Area",         width:8,  height:6,   icon:"🪑", color:"#f5f3ff", border:"#8b5cf6",  payment:false },
+    { type:"security",  label:"Security Desk",        width:4,  height:3,   icon:"🛡️", color:"#fff1f2", border:"#f43f5e",  payment:false },
+    { type:"office",    label:"Office",               width:8,  height:8,   icon:"🏢", color:"#f8fafc", border:"#64748b",  payment:false },
+    { type:"storage",   label:"Storage / Vault",      width:10, height:8,   icon:"🔒", color:"#fff7ed", border:"#f97316",  payment:false },
+    { type:"budtender", label:"Budtender Station",    width:4,  height:3,   icon:"🌿", color:"#f0fdf4", border:"#16a34a",  payment:false },
+    { type:"entrance",  label:"Entrance / Reception", width:6,  height:3,   icon:"🚪", color:"#eff6ff", border:"#3b82f6",  payment:false },
+    { type:"camera",    label:"Security Camera Zone", width:3,  height:3,   icon:"📷", color:"#fdf4ff", border:"#a855f7",  payment:false },
+    { type:"checkout",  label:"Checkout Counter",     width:8,  height:3,   icon:"💳", color:"#fff3e8", border:"#f5861f",  payment:true  },
+    { type:"atm",       label:"ATM / Kiosk",          width:3,  height:2,   icon:"🏧", color:"#ecfeff", border:"#06b6d4",  payment:true  },
+    { type:"payment",   label:"Payment Terminal",     width:2,  height:2,   icon:"📟", color:"#fef9ec", border:"#f5861f",  payment:true  }
+  ];
+  var TIPS = {
+    atm:      "Our ATMs are compliant, branded, and fully serviced for cannabis dispensaries.",
+    payment:  "Paybotic's payment terminals support debit, cashless ATM & digital wallets.",
+    checkout: "Position your checkout near payment terminals for optimal customer flow."
+  };
+
+  var fixtures = [], selectedId = null, dragging = null, dragOff = {x:0,y:0};
+  var roomW = 40, roomH = 25;
+
+  function uid() { return Math.random().toString(36).slice(2,10); }
+  function snap(v) { return Math.round(v / GRID) * GRID; }
+  function $(id) { return document.getElementById(id); }
+
+  /* ---- BUILD LIBRARY ---- */
+  function buildLibrary() {
+    ['store','payment'].forEach(function(tab) {
+      var el = $('fixture-' + tab);
+      el.innerHTML = '';
+      FIXTURES.filter(function(f){ return tab === 'payment' ? f.payment : !f.payment; }).forEach(function(item) {
+        var btn = document.createElement('button');
+        btn.className = 'fixture-btn';
+        btn.style.background = item.color;
+        btn.style.borderColor = 'transparent';
+        btn.dataset.fixtureType = item.type;
+        btn.innerHTML =
+          '<span class="fixture-icon">' + item.icon + '</span>' +
+          '<span style="pointer-events:none"><span class="fixture-name" style="display:block">' + item.label + '</span>' +
+          '<span class="fixture-dims">' + item.width + ' × ' + item.height + ' ft</span></span>' +
+          '<span class="fixture-plus" style="color:' + item.border + '">+</span>';
+        el.appendChild(btn);
+      });
+    });
+  }
+
+  /* ---- TABS ---- */
+  $('tab-store').addEventListener('click', function() {
+    $('tab-store').classList.add('active');
+    $('tab-payment').classList.remove('active');
+    $('fixture-store').style.display = '';
+    $('fixture-payment').style.display = 'none';
+  });
+  $('tab-payment').addEventListener('click', function() {
+    $('tab-payment').classList.add('active');
+    $('tab-store').classList.remove('active');
+    $('fixture-payment').style.display = '';
+    $('fixture-store').style.display = 'none';
+  });
+
+  /* ---- FIXTURE LIBRARY CLICK (delegation) ---- */
+  document.addEventListener('click', function(e) {
+    var btn = e.target.closest('.fixture-btn');
+    if (!btn) return;
+    var type = btn.dataset.fixtureType;
+    var item = FIXTURES.find(function(f){ return f.type === type; });
+    if (item) addFixture(item);
+  });
+
+  /* ---- ROOM INPUTS ---- */
+  $('roomW').addEventListener('input', updateRoom);
+  $('roomH').addEventListener('input', updateRoom);
+
+  function updateRoom() {
+    roomW = Math.max(10, parseInt($('roomW').value) || 10);
+    roomH = Math.max(10, parseInt($('roomH').value) || 10);
+    var canvas = $('room-canvas');
+    canvas.style.width  = (roomW * PPF) + 'px';
+    canvas.style.height = (roomH * PPF) + 'px';
+    $('room-label').textContent = roomW + ' ft × ' + roomH + ' ft';
+    $('canvas-dims-label').textContent = 'Room: ' + roomW + ' ft × ' + roomH + ' ft';
+    $('stat-total-area').textContent = (roomW * roomH) + ' sq ft';
+    updateStats();
+  }
+
+  /* ---- ADD FIXTURE ---- */
+  function addFixture(item) {
+    var w = item.width * PPF, h = item.height * PPF;
+    var f = {
+      id: uid(), type: item.type, label: item.label,
+      color: item.color, border: item.border, icon: item.icon,
+      x: snap(Math.max(0, roomW * PPF / 2 - w / 2)),
+      y: snap(Math.max(0, roomH * PPF / 2 - h / 2)),
+      width: w, height: h, rotation: 0
+    };
+    fixtures.push(f);
+    renderFixture(f);
+    selectFixture(f.id);
+    updateStats();
+    $('canvas-empty').style.display = 'none';
+  }
+
+  /* ---- RENDER FIXTURE ---- */
+  function renderFixture(f) {
+    var el = $('f-' + f.id);
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'f-' + f.id;
+      el.className = 'fixture-item';
+      $('room-canvas').appendChild(el);
+    }
+    el.style.left      = f.x + 'px';
+    el.style.top       = f.y + 'px';
+    el.style.width     = f.width + 'px';
+    el.style.height    = f.height + 'px';
+    el.style.background = f.color;
+    el.style.border    = '1.5px solid ' + f.border + '80';
+    el.style.transform = 'rotate(' + f.rotation + 'deg)';
+    el.style.transformOrigin = 'center center';
+    el.style.position  = 'absolute';
+    el.style.borderRadius = '8px';
+    el.style.cursor    = 'grab';
+    el.style.padding   = '4px';
+    el.style.overflow  = 'hidden';
+    el.style.userSelect = 'none';
+    el.dataset.fid = f.id;
+    el.innerHTML =
+      '<div class="f-icon">' + f.icon + '</div>' +
+      '<div class="f-name">' + f.label + '</div>' +
+      '<div class="f-size">' + (f.width/PPF).toFixed(0) + '×' + (f.height/PPF).toFixed(0) + 'ft</div>';
+    if (selectedId === f.id) el.classList.add('selected');
+    else el.classList.remove('selected');
+  }
+
+  /* ---- CANVAS MOUSE EVENTS (delegation) ---- */
+  var canvas = $('room-canvas');
+
+  canvas.addEventListener('mousedown', function(e) {
+    var el = e.target.closest('.fixture-item');
+    if (el) {
+      // drag start
+      e.preventDefault();
+      var fid = el.dataset.fid;
+      selectFixture(fid);
+      dragging = fid;
+      var f = fixtures.find(function(x){ return x.id === fid; });
+      var rect = canvas.getBoundingClientRect();
+      dragOff = { x: e.clientX - rect.left - f.x, y: e.clientY - rect.top - f.y };
+      el.style.cursor = 'grabbing';
+    } else {
+      // click on canvas background — deselect
+      selectFixture(null);
+    }
+  });
+
+  canvas.addEventListener('mousemove', function(e) {
+    if (!dragging) return;
+    var f = fixtures.find(function(x){ return x.id === dragging; });
+    if (!f) return;
+    var rect = canvas.getBoundingClientRect();
+    f.x = snap(Math.max(0, Math.min(e.clientX - rect.left - dragOff.x, roomW*PPF - f.width)));
+    f.y = snap(Math.max(0, Math.min(e.clientY - rect.top  - dragOff.y, roomH*PPF - f.height)));
+    renderFixture(f);
+    $('prop-pos').textContent = '📍 Position: ' + (f.x/PPF).toFixed(1) + ' ft, ' + (f.y/PPF).toFixed(1) + ' ft';
+  });
+
+  function stopDrag() {
+    if (dragging) {
+      var el = $('f-' + dragging);
+      if (el) el.style.cursor = 'grab';
+    }
+    dragging = null;
+  }
+  canvas.addEventListener('mouseup', stopDrag);
+  canvas.addEventListener('mouseleave', stopDrag);
+
+  /* ---- SELECT FIXTURE ---- */
+  function selectFixture(id) {
+    selectedId = id;
+    fixtures.forEach(function(f) {
+      var el = $('f-' + f.id);
+      if (el) { if (f.id === id) el.classList.add('selected'); else el.classList.remove('selected'); }
+    });
+    var f = id ? fixtures.find(function(x){ return x.id === id; }) : null;
+    if (!f) {
+      $('props-empty').style.display = '';
+      $('props-form').style.display = 'none';
+      return;
+    }
+    $('props-empty').style.display = 'none';
+    $('props-form').style.display = '';
+    $('pp-icon').textContent = f.icon;
+    $('pp-label').textContent = f.label;
+    $('props-preview').style.background = f.color;
+    $('prop-label').value = (f.width / PPF).toFixed(1); // reset then assign properly
+    $('prop-label').value = f.label;
+    $('prop-w').value = (f.width / PPF).toFixed(1);
+    $('prop-h').value = (f.height / PPF).toFixed(1);
+    $('prop-rot').value = f.rotation;
+    $('rot-val').textContent = f.rotation + '°';
+    $('prop-pos').textContent  = '📍 Position: ' + (f.x/PPF).toFixed(1) + ' ft, ' + (f.y/PPF).toFixed(1) + ' ft';
+    $('prop-foot').textContent = '📐 Footprint: ' + ((f.width/PPF)*(f.height/PPF)).toFixed(1) + ' sq ft';
+    var tip = TIPS[f.type];
+    if (tip) { $('payment-tip').style.display = ''; $('payment-tip-text').textContent = tip; }
+    else { $('payment-tip').style.display = 'none'; }
+  }
+
+  /* ---- PROPERTY INPUTS ---- */
+  $('prop-label').addEventListener('input', function() {
+    if (!selectedId) return;
+    var f = fixtures.find(function(x){ return x.id === selectedId; });
+    if (!f) return;
+    f.label = this.value;
+    $('pp-label').textContent = this.value;
+    renderFixture(f);
+  });
+  $('prop-w').addEventListener('input', function() {
+    if (!selectedId) return;
+    var f = fixtures.find(function(x){ return x.id === selectedId; });
+    if (!f) return;
+    f.width = Math.min(roomW * PPF, Math.max(PPF, parseFloat(this.value || 1) * PPF));
+    renderFixture(f); updateStats();
+  });
+  $('prop-h').addEventListener('input', function() {
+    if (!selectedId) return;
+    var f = fixtures.find(function(x){ return x.id === selectedId; });
+    if (!f) return;
+    f.height = Math.min(roomH * PPF, Math.max(PPF, parseFloat(this.value || 1) * PPF));
+    renderFixture(f); updateStats();
+  });
+  $('prop-rot').addEventListener('input', function() {
+    if (!selectedId) return;
+    var f = fixtures.find(function(x){ return x.id === selectedId; });
+    if (!f) return;
+    f.rotation = parseInt(this.value);
+    $('rot-val').textContent = f.rotation + '°';
+    renderFixture(f);
+  });
+
+  /* ---- PROPERTY BUTTONS ---- */
+  $('btn-rotate').addEventListener('click', function() {
+    if (!selectedId) return;
+    var f = fixtures.find(function(x){ return x.id === selectedId; });
+    if (!f) return;
+    f.rotation = (f.rotation + 90) % 360;
+    $('prop-rot').value = f.rotation;
+    $('rot-val').textContent = f.rotation + '°';
+    renderFixture(f);
+  });
+  $('btn-duplicate').addEventListener('click', function() {
+    if (!selectedId) return;
+    var f = fixtures.find(function(x){ return x.id === selectedId; });
+    if (!f) return;
+    var copy = Object.assign({}, f, {
+      id: uid(), label: f.label + ' Copy',
+      x: Math.min(f.x + GRID, roomW * PPF - f.width),
+      y: Math.min(f.y + GRID, roomH * PPF - f.height)
+    });
+    fixtures.push(copy);
+    renderFixture(copy);
+    selectFixture(copy.id);
+    updateStats();
+  });
+  $('btn-delete').addEventListener('click', function() {
+    if (!selectedId) return;
+    var el = $('f-' + selectedId);
+    if (el) el.remove();
+    fixtures = fixtures.filter(function(f){ return f.id !== selectedId; });
+    selectedId = null;
+    $('props-empty').style.display = '';
+    $('props-form').style.display = 'none';
+    updateStats();
+    if (fixtures.length === 0) $('canvas-empty').style.display = '';
+  });
+
+  /* ---- CLEAR ---- */
+  $('btn-clear').addEventListener('click', function() {
+    fixtures.forEach(function(f){ var el = $('f-'+f.id); if(el) el.remove(); });
+    fixtures = []; selectedId = null;
+    $('props-empty').style.display = '';
+    $('props-form').style.display = 'none';
+    $('canvas-empty').style.display = '';
+    updateStats();
+  });
+
+  /* ---- STATS ---- */
+  function updateStats() {
+    var total = roomW * roomH;
+    var fp = fixtures.reduce(function(s,f){ return s + (f.width/PPF)*(f.height/PPF); }, 0);
+    var open = Math.max(0, total - fp);
+    $('qs-area').textContent      = total + ' sq ft';
+    $('qs-count').textContent     = fixtures.length;
+    $('qs-footprint').textContent = fp.toFixed(1) + ' sq ft';
+    $('qs-open').textContent      = open.toFixed(1) + ' sq ft';
+    $('stat-total-area').textContent = total + ' sq ft';
+    var hasPay = fixtures.some(function(f){ return ['atm','payment','checkout'].indexOf(f.type) > -1; });
+    $('no-payment-tip').style.display = (!hasPay && fixtures.length > 0) ? '' : 'none';
+    var btn = $('btn-to-review');
+    btn.disabled = fixtures.length === 0;
+    btn.textContent = fixtures.length === 0 ? 'Add fixtures to continue →' : 'Review My Layout →';
+  }
+
+  /* ---- STEP NAVIGATION ---- */
+  function goToStep(step) {
+    document.querySelectorAll('.step').forEach(function(s){ s.classList.remove('active'); });
+    $(('step-' + step)).classList.add('active');
+    var map = { design:1, details:2, contact:3, done:4 };
+    var cur = map[step] || 1;
+    [1,2,3].forEach(function(i) {
+      var dot = $('pdot-'+i), lbl = $('plabel-'+i);
+      dot.className = 'prog-dot' + (i < cur ? ' done' : i === cur ? ' active' : '');
+      dot.textContent = i < cur ? '✓' : i;
+      lbl.className = 'prog-label' + (i === cur ? ' active' : '');
+    });
+    if (step === 'details') buildSummary();
+  }
+
+  $('btn-to-review').addEventListener('click',    function(){ goToStep('details'); });
+  $('btn-back-design').addEventListener('click',  function(){ goToStep('design'); });
+  $('btn-to-contact').addEventListener('click',   function(){ goToStep('contact'); });
+  $('btn-back-details').addEventListener('click', function(){ goToStep('details'); });
+  $('btn-submit').addEventListener('click', submitLead);
+  $('btn-start-over').addEventListener('click', function() {
+    fixtures.forEach(function(f){ var el=$('f-'+f.id); if(el) el.remove(); });
+    fixtures=[]; selectedId=null;
+    $('props-empty').style.display=''; $('props-form').style.display='none';
+    $('canvas-empty').style.display='';
+    ['c-name','c-email','c-phone','c-business'].forEach(function(id){ $(id).value=''; });
+    updateStats(); goToStep('design');
+  });
+
+  /* ---- DETAILS SUMMARY ---- */
+  function buildSummary() {
+    var total = roomW * roomH;
+    var fp = fixtures.reduce(function(s,f){ return s + (f.width/PPF)*(f.height/PPF); }, 0);
+    $('sum-size').textContent  = roomW + ' × ' + roomH + ' ft';
+    $('sum-area').textContent  = total + ' sq ft';
+    $('sum-count').textContent = fixtures.length;
+    $('sum-open').textContent  = Math.max(0, total - fp).toFixed(0) + ' sq ft';
+    var list = $('fixture-list');
+    list.innerHTML = '';
+    fixtures.forEach(function(f) {
+      var isPay = ['atm','payment','checkout'].indexOf(f.type) > -1;
+      var div = document.createElement('div');
+      div.className = 'fixture-list-item';
+      div.style.background = f.color;
+      div.innerHTML =
+        '<span style="font-size:20px">' + f.icon + '</span>' +
+        '<div><div style="font-weight:600;font-size:13px;color:#1a2535">' + f.label + '</div>' +
+        '<div style="font-size:11px;color:#64748b">' + (f.width/PPF).toFixed(1) + ' × ' + (f.height/PPF).toFixed(1) + ' ft</div></div>' +
+        (isPay ? '<span class="fli-badge">💳 Payment</span>' : '');
+      list.appendChild(div);
+    });
+    var hasPay = fixtures.some(function(f){ return ['atm','payment','checkout'].indexOf(f.type) > -1; });
+    $('details-no-payment').style.display = hasPay ? 'none' : '';
+  }
+
+  /* ---- SUBMIT ---- */
+  function submitLead() {
+    var name  = $('c-name').value.trim();
+    var email = $('c-email').value.trim();
+    if (!name || !email) { alert('Please enter your name and email to continue.'); return; }
+    $('done-name').textContent  = name.split(' ')[0];
+    $('done-email').textContent = email;
+    $('ds-size').textContent    = roomW + ' × ' + roomH + ' ft';
+    $('ds-area').textContent    = (roomW * roomH) + ' sq ft';
+    $('ds-count').textContent   = fixtures.length;
+    $('ds-biz').textContent     = $('c-business').value.trim() || '—';
+    goToStep('done');
+  }
+
+  /* ---- INIT ---- */
+  buildLibrary();
+  updateRoom();
+
+})();
+</script>
+</body>
+</html>
