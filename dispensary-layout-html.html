@@ -305,11 +305,11 @@
       <!-- PROPERTIES -->
       <div class="card">
         <div class="section-title">⚙️ Properties</div>
-        <div id="props-empty">
+        <div id="pbc-props-empty">
           <div class="pe-icon">👆</div>
           <p>Click any fixture on the canvas to edit it</p>
         </div>
-        <div id="props-form">
+        <div id="pbc-props-form">
           <div class="props-preview" id="props-preview">
             <div style="font-size:28px;" id="pp-icon">📦</div>
             <div style="font-weight:700;font-size:13px;color:#1a2535;margin-top:4px;" id="pp-label">Fixture</div>
@@ -645,13 +645,16 @@
       if (el) { if (f.id === id) el.classList.add('selected'); else el.classList.remove('selected'); }
     });
     var f = id ? fixtures.find(function(x){ return x.id === id; }) : null;
+    var emptyEl = $('pbc-props-empty');
+    var formEl  = $('pbc-props-form');
+    console.log('props-empty el:', emptyEl, '| props-form el:', formEl);
     if (!f) {
-      $('props-empty').style.display = '';
-      $('props-form').style.display = 'none';
+      if (emptyEl) emptyEl.style.display = '';
+      if (formEl)  formEl.style.display  = 'none';
       return;
     }
-    $('props-empty').style.display = 'none';
-    $('props-form').style.display = '';
+    if (emptyEl) emptyEl.style.display = 'none';
+    if (formEl)  formEl.style.display  = '';
     $('pp-icon').textContent = f.icon;
     $('pp-label').textContent = f.label;
     $('props-preview').style.background = f.color;
@@ -730,8 +733,8 @@
     if (el) el.remove();
     fixtures = fixtures.filter(function(f){ return f.id !== selectedId; });
     selectedId = null;
-    $('props-empty').style.display = '';
-    $('props-form').style.display = 'none';
+    $('pbc-props-empty').style.display = '';
+    $('pbc-props-form').style.display = 'none';
     updateStats();
     if (fixtures.length === 0) $('canvas-empty').style.display = '';
   });
@@ -740,8 +743,8 @@
   $('btn-clear').addEventListener('click', function() {
     fixtures.forEach(function(f){ var el = $('f-'+f.id); if(el) el.remove(); });
     fixtures = []; selectedId = null;
-    $('props-empty').style.display = '';
-    $('props-form').style.display = 'none';
+    $('pbc-props-empty').style.display = '';
+    $('pbc-props-form').style.display = 'none';
     $('canvas-empty').style.display = '';
     updateStats();
   });
