@@ -134,7 +134,10 @@
     box-shadow: 0 0 0 3px rgba(245,134,31,0.3), 0 2px 8px rgba(0,0,0,0.15) !important;
     outline: 2px solid #f5861f;
   }
-  .f-icon { font-size: 13px; line-height: 1; pointer-events: none; }
+  .fixture-item.type-wall-ext { border-radius: 3px !important; }
+  .fixture-item.type-wall-int { border-radius: 3px !important; }
+  .fixture-item.type-window   { border-style: dashed !important; border-width: 2px !important; }
+  .fixture-item.type-door     { border-radius: 3px 12px 12px 3px !important; }
   .f-name { font-size: 9px; font-weight: 700; color: #1a2535; line-height: 1.2; margin-top: 2px; pointer-events: none; }
   .f-size { font-size: 8px; color: #64748b; pointer-events: none; }
   #props-empty { text-align: center; padding: 30px 10px; }
@@ -263,9 +266,11 @@
           <div class="tabs">
             <button class="tab-btn active" id="tab-store">Store</button>
             <button class="tab-btn" id="tab-payment">💳 Payment</button>
+            <button class="tab-btn" id="tab-structure">🧱 Structure</button>
           </div>
           <div id="fixture-store"></div>
           <div id="fixture-payment" style="display:none;"></div>
+          <div id="fixture-structure" style="display:none;"></div>
         </div>
 
         <div class="card">
@@ -443,18 +448,23 @@
 (function() {
   var GRID = 20, PPF = 14;
   var FIXTURES = [
-    { type:"display",   label:"Display Case",        width:6,  height:2.5, icon:"🪟", color:"#e8f4fd", border:"#244d74",  payment:false },
-    { type:"shelving",  label:"Gondola Shelving",     width:4,  height:2,   icon:"📦", color:"#f0fdf4", border:"#22c55e",  payment:false },
-    { type:"waiting",   label:"Waiting Area",         width:8,  height:6,   icon:"🪑", color:"#f5f3ff", border:"#8b5cf6",  payment:false },
-    { type:"security",  label:"Security Desk",        width:4,  height:3,   icon:"🛡️", color:"#fff1f2", border:"#f43f5e",  payment:false },
-    { type:"office",    label:"Office",               width:8,  height:8,   icon:"🏢", color:"#f8fafc", border:"#64748b",  payment:false },
-    { type:"storage",   label:"Storage / Vault",      width:10, height:8,   icon:"🔒", color:"#fff7ed", border:"#f97316",  payment:false },
-    { type:"budtender", label:"Budtender Station",    width:4,  height:3,   icon:"🌿", color:"#f0fdf4", border:"#16a34a",  payment:false },
-    { type:"entrance",  label:"Entrance / Reception", width:6,  height:3,   icon:"🚪", color:"#eff6ff", border:"#3b82f6",  payment:false },
-    { type:"camera",    label:"Security Camera Zone", width:3,  height:3,   icon:"📷", color:"#fdf4ff", border:"#a855f7",  payment:false },
-    { type:"checkout",  label:"Checkout Counter",     width:8,  height:3,   icon:"💳", color:"#fff3e8", border:"#f5861f",  payment:true  },
-    { type:"atm",       label:"ATM / Kiosk",          width:3,  height:2,   icon:"🏧", color:"#ecfeff", border:"#06b6d4",  payment:true  },
-    { type:"payment",   label:"Payment Terminal",     width:2,  height:2,   icon:"📟", color:"#fef9ec", border:"#f5861f",  payment:true  }
+    { type:"display",   label:"Display Case",        width:6,  height:2.5, icon:"🪟", color:"#e8f4fd", border:"#244d74",  payment:false,  structure:false },
+    { type:"shelving",  label:"Gondola Shelving",     width:4,  height:2,   icon:"📦", color:"#f0fdf4", border:"#22c55e",  payment:false,  structure:false },
+    { type:"waiting",   label:"Waiting Area",         width:8,  height:6,   icon:"🪑", color:"#f5f3ff", border:"#8b5cf6",  payment:false,  structure:false },
+    { type:"security",  label:"Security Desk",        width:4,  height:3,   icon:"🛡️", color:"#fff1f2", border:"#f43f5e",  payment:false,  structure:false },
+    { type:"office",    label:"Office",               width:8,  height:8,   icon:"🏢", color:"#f8fafc", border:"#64748b",  payment:false,  structure:false },
+    { type:"storage",   label:"Storage / Vault",      width:10, height:8,   icon:"🔒", color:"#fff7ed", border:"#f97316",  payment:false,  structure:false },
+    { type:"budtender", label:"Budtender Station",    width:4,  height:3,   icon:"🌿", color:"#f0fdf4", border:"#16a34a",  payment:false,  structure:false },
+    { type:"entrance",  label:"Entrance / Reception", width:6,  height:3,   icon:"🚪", color:"#eff6ff", border:"#3b82f6",  payment:false,  structure:false },
+    { type:"camera",    label:"Security Camera Zone", width:3,  height:3,   icon:"📷", color:"#fdf4ff", border:"#a855f7",  payment:false,  structure:false },
+    { type:"checkout",  label:"Checkout Counter",     width:8,  height:3,   icon:"💳", color:"#fff3e8", border:"#f5861f",  payment:true,   structure:false },
+    { type:"atm",       label:"ATM / Kiosk",          width:3,  height:2,   icon:"🏧", color:"#ecfeff", border:"#06b6d4",  payment:true,   structure:false },
+    { type:"payment",   label:"Payment Terminal",     width:2,  height:2,   icon:"📟", color:"#fef9ec", border:"#f5861f",  payment:true,   structure:false },
+    { type:"wall-ext",  label:"Exterior Wall",        width:12, height:1,   icon:"🧱", color:"#4b5563", border:"#1f2937",  payment:false,  structure:true  },
+    { type:"wall-int",  label:"Interior Wall",        width:8,  height:0.5, icon:"▬",  color:"#9ca3af", border:"#6b7280",  payment:false,  structure:true  },
+    { type:"door",      label:"Door",                 width:3,  height:1,   icon:"🚪", color:"#fef9c3", border:"#ca8a04",  payment:false,  structure:true  },
+    { type:"window",    label:"Window",               width:4,  height:0.5, icon:"🪟", color:"#e0f2fe", border:"#0284c7",  payment:false,  structure:true  },
+    { type:"restroom",  label:"Restroom",             width:6,  height:6,   icon:"🚻", color:"#f0fdf4", border:"#16a34a",  payment:false,  structure:true  }
   ];
   var TIPS = {
     atm:      "Our ATMs are compliant, branded, and fully serviced for cannabis dispensaries.",
@@ -471,10 +481,14 @@
 
   /* ---- BUILD LIBRARY ---- */
   function buildLibrary() {
-    ['store','payment'].forEach(function(tab) {
+    ['store','payment','structure'].forEach(function(tab) {
       var el = $('fixture-' + tab);
       el.innerHTML = '';
-      FIXTURES.filter(function(f){ return tab === 'payment' ? f.payment : !f.payment; }).forEach(function(item) {
+      FIXTURES.filter(function(f){
+        if (tab === 'payment')   return f.payment;
+        if (tab === 'structure') return f.structure;
+        return !f.payment && !f.structure;
+      }).forEach(function(item) {
         var btn = document.createElement('button');
         btn.className = 'fixture-btn';
         btn.style.background = item.color;
@@ -491,18 +505,15 @@
   }
 
   /* ---- TABS ---- */
-  $('tab-store').addEventListener('click', function() {
-    $('tab-store').classList.add('active');
-    $('tab-payment').classList.remove('active');
-    $('fixture-store').style.display = '';
-    $('fixture-payment').style.display = 'none';
-  });
-  $('tab-payment').addEventListener('click', function() {
-    $('tab-payment').classList.add('active');
-    $('tab-store').classList.remove('active');
-    $('fixture-payment').style.display = '';
-    $('fixture-store').style.display = 'none';
-  });
+  function switchTab(active) {
+    ['store','payment','structure'].forEach(function(t) {
+      $('tab-' + t).classList.toggle('active', t === active);
+      $('fixture-' + t).style.display = t === active ? '' : 'none';
+    });
+  }
+  $('tab-store').addEventListener('click',     function(){ switchTab('store'); });
+  $('tab-payment').addEventListener('click',   function(){ switchTab('payment'); });
+  $('tab-structure').addEventListener('click', function(){ switchTab('structure'); });
 
   /* ---- FIXTURE LIBRARY CLICK (delegation) ---- */
   document.addEventListener('click', function(e) {
@@ -552,7 +563,7 @@
     if (!el) {
       el = document.createElement('div');
       el.id = 'f-' + f.id;
-      el.className = 'fixture-item';
+      el.className = 'fixture-item type-' + f.type;
       $('room-canvas').appendChild(el);
     }
     el.style.left      = f.x + 'px';
