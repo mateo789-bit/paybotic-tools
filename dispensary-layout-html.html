@@ -5,221 +5,114 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Paybotic Financial Dispensary Layout Planner</title>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f6f9; min-height: 100vh; }
-  #header {
-    background: #244d74; padding: 16px 28px;
-    display: flex; align-items: center; gap: 16px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.18); flex-wrap: wrap;
-  }
-  .brand-name { color: #f5861f; font-weight: 800; font-size: 20px; letter-spacing: 0.05em; }
-  .brand-sub { color: rgba(255,255,255,0.6); font-size: 11px; letter-spacing: 0.1em; }
-  .header-divider { width: 1px; height: 36px; background: rgba(255,255,255,0.2); margin: 0 8px; }
-  .header-title { color: #fff; font-weight: 700; font-size: 16px; }
-  .header-sub { color: rgba(255,255,255,0.6); font-size: 12px; margin-top: 2px; }
-  #progress { margin-left: auto; display: flex; align-items: center; gap: 8px; }
-  .prog-step { display: flex; align-items: center; gap: 6px; }
-  .prog-dot {
-    width: 26px; height: 26px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 12px; font-weight: 700; color: #fff;
-    background: rgba(255,255,255,0.2);
-  }
-  .prog-dot.active { background: #f5861f; }
-  .prog-dot.done { background: #f5861f; }
-  .prog-label { color: rgba(255,255,255,0.5); font-size: 12px; }
-  .prog-label.active { color: #fff; font-weight: 700; }
-  .prog-line { width: 24px; height: 1px; background: rgba(255,255,255,0.25); }
-  #app { padding: 20px; }
-  .step { display: none; }
-  .step.active { display: block; }
-  #step-design .grid {
-    display: grid;
-    grid-template-columns: 270px 1fr 250px;
-    gap: 16px; max-width: 1440px; margin: 0 auto;
-  }
-  .card {
-    background: #fff; border-radius: 16px; padding: 20px;
-    box-shadow: 0 2px 12px rgba(36,77,116,0.10);
-  }
-  .section-title {
-    font-weight: 700; color: #244d74; font-size: 12px;
-    text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 14px;
-  }
-  label.field-label {
-    font-size: 11px; font-weight: 700; color: #244d74;
-    text-transform: uppercase; letter-spacing: 0.04em;
-    display: block; margin-bottom: 5px; margin-top: 10px;
-  }
-  input[type=number], input[type=text], input[type=email], input[type=tel] {
-    width: 100%; padding: 9px 12px; border-radius: 8px;
-    border: 1.5px solid #d5d5d5; font-size: 14px; color: #1a2535;
-    font-family: inherit; outline: none; transition: border 0.15s;
-  }
-  input:focus { border-color: #244d74; }
-  .tabs { display: flex; gap: 6px; margin-bottom: 12px; }
-  .tab-btn {
-    flex: 1; padding: 7px; border-radius: 8px; border: none;
-    cursor: pointer; font-size: 12px; font-weight: 600;
-    background: #f4f6f9; color: #64748b; transition: all 0.15s;
-  }
-  .tab-btn.active { background: #244d74; color: #fff; }
-  .fixture-btn {
-    width: 100%; padding: 9px 12px; border-radius: 10px;
-    border: 1.5px solid transparent; cursor: pointer;
-    text-align: left; display: flex; align-items: center; gap: 10px;
-    margin-bottom: 6px; transition: border-color 0.15s; font-family: inherit;
-  }
-  .fixture-btn:hover { opacity: 0.85; }
-  .fixture-icon { font-size: 18px; pointer-events: none; }
-  .fixture-name { font-size: 12px; font-weight: 600; color: #1a2535; pointer-events: none; }
-  .fixture-dims { font-size: 11px; color: #64748b; pointer-events: none; }
-  .fixture-plus { margin-left: auto; font-weight: 700; font-size: 16px; pointer-events: none; }
-  .stat-row {
-    display: flex; justify-content: space-between;
-    padding: 8px 0; border-bottom: 1px solid #f4f6f9; font-size: 13px;
-  }
-  .stat-label { color: #64748b; }
-  .stat-val { font-weight: 700; color: #244d74; }
-  .btn-primary {
-    background: #f5861f; color: #fff; border: none;
-    border-radius: 10px; padding: 12px 20px; cursor: pointer;
-    font-weight: 700; font-size: 14px; width: 100%;
-    font-family: inherit; transition: background 0.15s;
-  }
-  .btn-primary:hover { background: #e07618; }
-  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-  .btn-secondary {
-    background: transparent; color: #244d74;
-    border: 1.5px solid #244d74; border-radius: 10px;
-    padding: 10px 20px; cursor: pointer; font-weight: 600;
-    font-size: 13px; width: 100%; font-family: inherit; transition: all 0.15s;
-  }
-  .btn-secondary:hover { background: #f0f5fa; }
-  .btn-danger {
-    background: transparent; color: #ef4444;
-    border: 1.5px solid #ef4444; border-radius: 10px;
-    padding: 10px 20px; cursor: pointer; font-weight: 600;
-    font-size: 13px; width: 100%; font-family: inherit;
-  }
-  #canvas-wrap { overflow: auto; }
-  #canvas-meta { display: flex; gap: 16px; font-size: 11px; color: #64748b; margin-bottom: 8px; }
-  #room-canvas {
-    position: relative;
-    border: 2px solid rgba(36,77,116,0.2);
-    border-radius: 10px;
-    background-color: #fafcff;
-    background-image:
-      linear-gradient(to right, rgba(36,77,116,0.09) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(36,77,116,0.09) 1px, transparent 1px);
-    background-size: 20px 20px;
-    cursor: default; flex-shrink: 0; user-select: none;
-  }
-  .room-lbl {
-    position: absolute; top: 6px; right: 10px;
-    font-size: 11px; color: #244d74; opacity: 0.45; pointer-events: none;
-  }
-  #canvas-empty {
-    position: absolute; inset: 0; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; pointer-events: none;
-  }
-  #canvas-empty .ei { font-size: 40px; opacity: 0.25; margin-bottom: 8px; }
-  #canvas-empty .et { color: #64748b; font-size: 14px; opacity: 0.5; }
-  .fixture-item {
-    position: absolute; border-radius: 8px; cursor: grab;
-    padding: 4px; overflow: hidden;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.08); user-select: none;
-  }
-  .fixture-item.selected {
-    box-shadow: 0 0 0 3px rgba(245,134,31,0.3), 0 2px 8px rgba(0,0,0,0.15) !important;
-    outline: 2px solid #f5861f;
-  }
-  .fixture-item.type-wall-ext { border-radius: 3px !important; }
-  .fixture-item.type-wall-int { border-radius: 3px !important; }
-  .fixture-item.type-window   { border-style: dashed !important; border-width: 2px !important; }
-  .fixture-item.type-door     { border-radius: 3px 12px 12px 3px !important; }
-  .f-name { font-size: 9px; font-weight: 700; color: #1a2535; line-height: 1.2; margin-top: 2px; pointer-events: none; }
-  .f-size { font-size: 8px; color: #64748b; pointer-events: none; }
-  #pbc-props-empty { text-align: center; padding: 30px 10px; }
-  #pbc-props-empty .pe-icon { font-size: 36px; margin-bottom: 10px; }
-  #pbc-props-empty p { color: #64748b; font-size: 13px; }
-  #pbc-props-form { display: none; }
-  .props-preview {
-    padding: 10px; border-radius: 10px; text-align: center;
-    margin-bottom: 12px; border: 1.5px solid rgba(0,0,0,0.08);
-  }
-  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .info-box {
-    padding: 10px; background: #f4f6f9; border-radius: 8px;
-    font-size: 12px; color: #64748b; margin: 10px 0;
-    display: flex; flex-direction: column; gap: 3px;
-  }
-  .prop-btns { display: flex; flex-direction: column; gap: 6px; margin-top: 14px; }
-  .tip-box {
-    margin-top: 14px; padding: 12px; background: #fff7ed;
-    border-radius: 10px; border: 1px solid rgba(245,134,31,0.3);
-  }
-  .tip-title { font-size: 11px; font-weight: 700; color: #f5861f; margin-bottom: 4px; }
-  .tip-text { font-size: 11px; color: #92400e; }
-  .alert-box {
-    padding: 12px; background: #fff7ed; border-radius: 8px;
-    border: 1px solid rgba(245,134,31,0.35); font-size: 12px;
-    color: #92400e; margin-top: 12px; display: none;
-  }
-  #summary-canvas-wrap {
-    margin-bottom: 24px; border-radius: 12px;
-    overflow: hidden; border: 1px solid rgba(36,77,116,0.1);
-    background: #fafcff;
-  }
-  #summary-canvas-label {
-    background: #244d74; color: rgba(255,255,255,0.8);
-    font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
-    text-transform: uppercase; padding: 7px 14px; cursor: pointer;
-  }
-  #summary-canvas { display: block; width: 100%; cursor: pointer; }
-  #step-details .inner { max-width: 860px; margin: 28px auto; }
-  #step-contact .inner { max-width: 640px; margin: 28px auto; }
-  #step-done .inner { max-width: 520px; margin: 60px auto; text-align: center; }
-  .summary-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 24px; }
-  .stat-card { padding: 16px; background: #f4f6f9; border-radius: 12px; text-align: center; }
-  .stat-card-icon { font-size: 24px; margin-bottom: 6px; }
-  .stat-card-val { font-weight: 800; font-size: 18px; color: #244d74; }
-  .stat-card-label { font-size: 12px; color: #64748b; }
-  #fixture-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 20px; }
-  .fixture-list-item {
-    display: flex; align-items: center; gap: 12px;
-    padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.07);
-  }
-  .fli-badge {
-    margin-left: auto; font-size: 11px; background: #f5861f;
-    color: #fff; border-radius: 6px; padding: 2px 8px; font-weight: 700; white-space: nowrap;
-  }
-  .step-btns { display: flex; gap: 12px; }
-  .step-btns .btn-primary, .step-btns .btn-secondary { flex: 1; }
-  .contact-header { text-align: center; margin-bottom: 20px; }
-  .contact-header h2 { font-weight: 800; font-size: 22px; color: #244d74; }
-  .contact-header p { color: #64748b; font-size: 14px; margin-top: 6px; }
-  .trust-box {
-    padding: 12px 14px; background: #f4f6f9; border-radius: 10px;
-    font-size: 12px; color: #64748b; margin-bottom: 16px; display: flex; gap: 8px;
-  }
-  .perks { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
-  .perk { font-size: 13px; color: #1a2535; }
-  .done-card { padding: 36px; }
-  .done-card h2 { font-weight: 800; font-size: 24px; color: #244d74; margin-bottom: 8px; }
-  .done-card p { color: #64748b; font-size: 14px; margin-bottom: 24px; }
-  .done-summary { padding: 20px; background: #f4f6f9; border-radius: 12px; margin-bottom: 24px; text-align: left; }
-  .done-summary h4 { font-weight: 700; color: #244d74; margin-bottom: 12px; font-size: 14px; }
-  .ds-row { display: flex; justify-content: space-between; padding: 5px 0; font-size: 13px; }
-  .ds-label { color: #64748b; }
-  .ds-val { font-weight: 600; color: #1a2535; }
-  input[type=range] { width: 100%; accent-color: #244d74; margin-top: 6px; }
-  .rotation-row { display: flex; justify-content: space-between; align-items: center; }
-  .rotation-val { font-size: 12px; font-weight: 600; color: #244d74; }
-  @media (max-width: 900px) {
-    #step-design .grid { grid-template-columns: 1fr; }
-    .summary-stats { grid-template-columns: repeat(2,1fr); }
-  }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f6f9; min-height: 100vh; }
+#header { background: #244d74; padding: 16px 28px; display: flex; align-items: center; gap: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.18); flex-wrap: wrap; }
+.brand-name { color: #f5861f; font-weight: 800; font-size: 20px; letter-spacing: 0.05em; }
+.brand-sub { color: rgba(255,255,255,0.6); font-size: 11px; letter-spacing: 0.1em; }
+.header-divider { width: 1px; height: 36px; background: rgba(255,255,255,0.2); margin: 0 8px; }
+.header-title { color: #fff; font-weight: 700; font-size: 16px; }
+.header-sub { color: rgba(255,255,255,0.6); font-size: 12px; margin-top: 2px; }
+#progress { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.prog-step { display: flex; align-items: center; gap: 6px; }
+.prog-dot { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; background: rgba(255,255,255,0.2); }
+.prog-dot.active { background: #f5861f; }
+.prog-dot.done { background: #f5861f; }
+.prog-label { color: rgba(255,255,255,0.5); font-size: 12px; }
+.prog-label.active { color: #fff; font-weight: 700; }
+.prog-line { width: 24px; height: 1px; background: rgba(255,255,255,0.25); }
+#app { padding: 20px; }
+.step { display: none; }
+.step.active { display: block; }
+#step-design .grid { display: grid; grid-template-columns: 270px 1fr 250px; gap: 16px; max-width: 1440px; margin: 0 auto; }
+.card { background: #fff; border-radius: 16px; padding: 20px; box-shadow: 0 2px 12px rgba(36,77,116,0.10); }
+.section-title { font-weight: 700; color: #244d74; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 14px; }
+label.field-label { font-size: 11px; font-weight: 700; color: #244d74; text-transform: uppercase; letter-spacing: 0.04em; display: block; margin-bottom: 5px; margin-top: 10px; }
+input[type=number], input[type=text], input[type=email], input[type=tel] { width: 100%; padding: 9px 12px; border-radius: 8px; border: 1.5px solid #d5d5d5; font-size: 14px; color: #1a2535; font-family: inherit; outline: none; transition: border 0.15s; }
+input:focus { border-color: #244d74; }
+.tabs { display: flex; gap: 6px; margin-bottom: 12px; }
+.tab-btn { flex: 1; padding: 7px; border-radius: 8px; border: none; cursor: pointer; font-size: 12px; font-weight: 600; background: #f4f6f9; color: #64748b; transition: all 0.15s; }
+.tab-btn.active { background: #244d74; color: #fff; }
+.fixture-btn { width: 100%; padding: 9px 12px; border-radius: 10px; border: 1.5px solid transparent; cursor: pointer; text-align: left; display: flex; align-items: center; gap: 10px; margin-bottom: 6px; transition: border-color 0.15s; font-family: inherit; }
+.fixture-btn:hover { opacity: 0.85; }
+.fixture-icon { font-size: 18px; pointer-events: none; }
+.fixture-name { font-size: 12px; font-weight: 600; color: #1a2535; pointer-events: none; }
+.fixture-dims { font-size: 11px; color: #64748b; pointer-events: none; }
+.fixture-plus { margin-left: auto; font-weight: 700; font-size: 16px; pointer-events: none; }
+.stat-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f4f6f9; font-size: 13px; }
+.stat-label { color: #64748b; }
+.stat-val { font-weight: 700; color: #244d74; }
+.btn-primary { background: #f5861f; color: #fff; border: none; border-radius: 10px; padding: 12px 20px; cursor: pointer; font-weight: 700; font-size: 14px; width: 100%; font-family: inherit; transition: background 0.15s; }
+.btn-primary:hover { background: #e07618; }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-secondary { background: transparent; color: #244d74; border: 1.5px solid #244d74; border-radius: 10px; padding: 10px 20px; cursor: pointer; font-weight: 600; font-size: 13px; width: 100%; font-family: inherit; transition: all 0.15s; }
+.btn-secondary:hover { background: #f0f5fa; }
+.btn-danger { background: transparent; color: #ef4444; border: 1.5px solid #ef4444; border-radius: 10px; padding: 10px 20px; cursor: pointer; font-weight: 600; font-size: 13px; width: 100%; font-family: inherit; }
+#canvas-wrap { overflow: auto; }
+#canvas-meta { display: flex; gap: 16px; font-size: 11px; color: #64748b; margin-bottom: 8px; }
+#room-canvas { position: relative; border: 2px solid rgba(36,77,116,0.2); border-radius: 10px; background-color: #fafcff; background-image: linear-gradient(to right, rgba(36,77,116,0.09) 1px, transparent 1px), linear-gradient(to bottom, rgba(36,77,116,0.09) 1px, transparent 1px); background-size: 20px 20px; cursor: default; flex-shrink: 0; user-select: none; }
+.room-lbl { position: absolute; top: 6px; right: 10px; font-size: 11px; color: #244d74; opacity: 0.45; pointer-events: none; }
+#canvas-empty { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; }
+#canvas-empty .ei { font-size: 40px; opacity: 0.25; margin-bottom: 8px; }
+#canvas-empty .et { color: #64748b; font-size: 14px; opacity: 0.5; }
+.fixture-item { position: absolute; border-radius: 8px; cursor: grab; padding: 4px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.08); user-select: none; }
+.fixture-item.selected { box-shadow: 0 0 0 3px rgba(245,134,31,0.3), 0 2px 8px rgba(0,0,0,0.15) !important; outline: 2px solid #f5861f; }
+.fixture-item.type-wall-ext { border-radius: 3px !important; }
+.fixture-item.type-wall-int { border-radius: 3px !important; }
+.fixture-item.type-window { border-style: dashed !important; border-width: 2px !important; }
+.fixture-item.type-door { border-radius: 3px 12px 12px 3px !important; }
+.f-icon { font-size: 13px; line-height: 1; pointer-events: none; }
+.f-name { font-size: 9px; font-weight: 700; color: #1a2535; line-height: 1.2; margin-top: 2px; pointer-events: none; }
+.f-size { font-size: 8px; color: #64748b; pointer-events: none; }
+#pbc-props-empty { text-align: center; padding: 30px 10px; }
+#pbc-props-empty .pe-icon { font-size: 36px; margin-bottom: 10px; }
+#pbc-props-empty p { color: #64748b; font-size: 13px; }
+#pbc-props-form { display: none; }
+.props-preview { padding: 10px; border-radius: 10px; text-align: center; margin-bottom: 12px; border: 1.5px solid rgba(0,0,0,0.08); }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.info-box { padding: 10px; background: #f4f6f9; border-radius: 8px; font-size: 12px; color: #64748b; margin: 10px 0; display: flex; flex-direction: column; gap: 3px; }
+.prop-btns { display: flex; flex-direction: column; gap: 6px; margin-top: 14px; }
+.tip-box { margin-top: 14px; padding: 12px; background: #fff7ed; border-radius: 10px; border: 1px solid rgba(245,134,31,0.3); }
+.tip-title { font-size: 11px; font-weight: 700; color: #f5861f; margin-bottom: 4px; }
+.tip-text { font-size: 11px; color: #92400e; }
+.alert-box { padding: 12px; background: #fff7ed; border-radius: 8px; border: 1px solid rgba(245,134,31,0.35); font-size: 12px; color: #92400e; margin-top: 12px; display: none; }
+#summary-canvas-wrap { margin-bottom: 24px; border-radius: 12px; overflow: hidden; border: 1px solid rgba(36,77,116,0.1); background: #fafcff; }
+#summary-canvas-label { background: #244d74; color: rgba(255,255,255,0.8); font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 7px 14px; cursor: pointer; }
+#summary-canvas { display: block; width: 100%; cursor: pointer; }
+#step-details .inner { max-width: 860px; margin: 28px auto; }
+#step-contact .inner { max-width: 640px; margin: 28px auto; }
+#step-done .inner { max-width: 520px; margin: 60px auto; text-align: center; }
+.summary-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 24px; }
+.stat-card { padding: 16px; background: #f4f6f9; border-radius: 12px; text-align: center; }
+.stat-card-icon { font-size: 24px; margin-bottom: 6px; }
+.stat-card-val { font-weight: 800; font-size: 18px; color: #244d74; }
+.stat-card-label { font-size: 12px; color: #64748b; }
+#fixture-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 20px; }
+.fixture-list-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.07); }
+.fli-badge { margin-left: auto; font-size: 11px; background: #f5861f; color: #fff; border-radius: 6px; padding: 2px 8px; font-weight: 700; white-space: nowrap; }
+.step-btns { display: flex; gap: 12px; }
+.step-btns .btn-primary, .step-btns .btn-secondary { flex: 1; }
+.contact-header { text-align: center; margin-bottom: 20px; }
+.contact-header h2 { font-weight: 800; font-size: 22px; color: #244d74; }
+.contact-header p { color: #64748b; font-size: 14px; margin-top: 6px; }
+.trust-box { padding: 12px 14px; background: #f4f6f9; border-radius: 10px; font-size: 12px; color: #64748b; margin-bottom: 16px; display: flex; gap: 8px; }
+.perks { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+.perk { font-size: 13px; color: #1a2535; }
+.done-card { padding: 36px; }
+.done-card h2 { font-weight: 800; font-size: 24px; color: #244d74; margin-bottom: 8px; }
+.done-card p { color: #64748b; font-size: 14px; margin-bottom: 24px; }
+.done-summary { padding: 20px; background: #f4f6f9; border-radius: 12px; margin-bottom: 24px; text-align: left; }
+.done-summary h4 { font-weight: 700; color: #244d74; margin-bottom: 12px; font-size: 14px; }
+.ds-row { display: flex; justify-content: space-between; padding: 5px 0; font-size: 13px; }
+.ds-label { color: #64748b; }
+.ds-val { font-weight: 600; color: #1a2535; }
+input[type=range] { width: 100%; accent-color: #244d74; margin-top: 6px; }
+.rotation-row { display: flex; justify-content: space-between; align-items: center; }
+.rotation-val { font-size: 12px; font-weight: 600; color: #244d74; }
+@media (max-width: 900px) {
+  #step-design .grid { grid-template-columns: 1fr; }
+  .summary-stats { grid-template-columns: repeat(2,1fr); }
+}
 </style>
 </head>
 <body>
@@ -254,7 +147,6 @@
 
 <div id="app">
 
-  <!-- STEP 1: DESIGN -->
   <div id="step-design" class="step active">
     <div class="grid">
       <div style="display:flex;flex-direction:column;gap:16px;">
@@ -360,7 +252,6 @@
     </div>
   </div>
 
-  <!-- STEP 2: DETAILS -->
   <div id="step-details" class="step">
     <div class="inner">
       <div class="card">
@@ -393,7 +284,6 @@
     </div>
   </div>
 
-  <!-- STEP 3: CONTACT -->
   <div id="step-contact" class="step">
     <div class="inner">
       <div class="card">
@@ -413,10 +303,10 @@
           <div class="perk">✅ Free follow-up with a Paybotic Financial specialist</div>
         </div>
         <iframe
-          aria-label='Paybotic Financial Dispensary Layout Tool'
+          aria-label="Paybotic Financial Dispensary Layout Tool"
           frameborder="0"
           style="height:750px;width:100%;border:none;margin-top:8px;"
-          src='https://forms.zohopublic.com/Paybotic/form/PayboticFinancialDispensaryLayoutTool/formperma/Uw6X8VmzgGy20P7g2Cuue077tHM6GBWJpRGCepwOSoE'>
+          src="https://forms.zohopublic.com/Paybotic/form/PayboticFinancialDispensaryLayoutTool/formperma/Uw6X8VmzgGy20P7g2Cuue077tHM6GBWJpRGCepwOSoE">
         </iframe>
         <div style="margin-top:16px;">
           <button class="btn-secondary" id="btn-back-details">← Back</button>
@@ -425,7 +315,6 @@
     </div>
   </div>
 
-  <!-- STEP 4: DONE -->
   <div id="step-done" class="step">
     <div class="inner">
       <div class="card done-card">
@@ -452,23 +341,23 @@
 (function() {
   var GRID = 20, PPF = 14;
   var FIXTURES = [
-    { type:"display",   label:"Display Case",        width:6,  height:2.5, icon:"🪟", color:"#e8f4fd", border:"#244d74",  payment:false, structure:false },
-    { type:"shelving",  label:"Gondola Shelving",     width:4,  height:2,   icon:"📦", color:"#f0fdf4", border:"#22c55e",  payment:false, structure:false },
-    { type:"waiting",   label:"Waiting Area",         width:8,  height:6,   icon:"🪑", color:"#f5f3ff", border:"#8b5cf6",  payment:false, structure:false },
-    { type:"security",  label:"Security Desk",        width:4,  height:3,   icon:"🛡️", color:"#fff1f2", border:"#f43f5e",  payment:false, structure:false },
-    { type:"office",    label:"Office",               width:8,  height:8,   icon:"🏢", color:"#f8fafc", border:"#64748b",  payment:false, structure:false },
-    { type:"storage",   label:"Storage / Vault",      width:10, height:8,   icon:"🔒", color:"#fff7ed", border:"#f97316",  payment:false, structure:false },
-    { type:"budtender", label:"Budtender Station",    width:4,  height:3,   icon:"🌿", color:"#f0fdf4", border:"#16a34a",  payment:false, structure:false },
-    { type:"entrance",  label:"Entrance / Reception", width:6,  height:3,   icon:"🚪", color:"#eff6ff", border:"#3b82f6",  payment:false, structure:false },
-    { type:"camera",    label:"Security Camera Zone", width:3,  height:3,   icon:"📷", color:"#fdf4ff", border:"#a855f7",  payment:false, structure:false },
-    { type:"checkout",  label:"Checkout Counter",     width:8,  height:3,   icon:"💳", color:"#fff3e8", border:"#f5861f",  payment:true,  structure:false },
-    { type:"atm",       label:"ATM / Kiosk",          width:3,  height:2,   icon:"🏧", color:"#ecfeff", border:"#06b6d4",  payment:true,  structure:false },
-    { type:"payment",   label:"Payment Terminal",     width:2,  height:2,   icon:"📟", color:"#fef9ec", border:"#f5861f",  payment:true,  structure:false },
-    { type:"wall-ext",  label:"Exterior Wall",        width:12, height:1,   icon:"🧱", color:"#4b5563", border:"#1f2937",  payment:false, structure:true  },
-    { type:"wall-int",  label:"Interior Wall",        width:8,  height:0.5, icon:"▬",  color:"#9ca3af", border:"#6b7280",  payment:false, structure:true  },
-    { type:"door",      label:"Door",                 width:3,  height:1,   icon:"🚪", color:"#fef9c3", border:"#ca8a04",  payment:false, structure:true  },
-    { type:"window",    label:"Window",               width:4,  height:0.5, icon:"🪟", color:"#e0f2fe", border:"#0284c7",  payment:false, structure:true  },
-    { type:"restroom",  label:"Restroom",             width:6,  height:6,   icon:"🚻", color:"#f0fdf4", border:"#16a34a",  payment:false, structure:true  }
+    { type:"display",   label:"Display Case",        width:6,  height:2.5, icon:"🪟", color:"#e8f4fd", border:"#244d74", payment:false, structure:false },
+    { type:"shelving",  label:"Gondola Shelving",     width:4,  height:2,   icon:"📦", color:"#f0fdf4", border:"#22c55e", payment:false, structure:false },
+    { type:"waiting",   label:"Waiting Area",         width:8,  height:6,   icon:"🪑", color:"#f5f3ff", border:"#8b5cf6", payment:false, structure:false },
+    { type:"security",  label:"Security Desk",        width:4,  height:3,   icon:"🛡️", color:"#fff1f2", border:"#f43f5e", payment:false, structure:false },
+    { type:"office",    label:"Office",               width:8,  height:8,   icon:"🏢", color:"#f8fafc", border:"#64748b", payment:false, structure:false },
+    { type:"storage",   label:"Storage / Vault",      width:10, height:8,   icon:"🔒", color:"#fff7ed", border:"#f97316", payment:false, structure:false },
+    { type:"budtender", label:"Budtender Station",    width:4,  height:3,   icon:"🌿", color:"#f0fdf4", border:"#16a34a", payment:false, structure:false },
+    { type:"entrance",  label:"Entrance / Reception", width:6,  height:3,   icon:"🚪", color:"#eff6ff", border:"#3b82f6", payment:false, structure:false },
+    { type:"camera",    label:"Security Camera Zone", width:3,  height:3,   icon:"📷", color:"#fdf4ff", border:"#a855f7", payment:false, structure:false },
+    { type:"checkout",  label:"Checkout Counter",     width:8,  height:3,   icon:"💳", color:"#fff3e8", border:"#f5861f", payment:true,  structure:false },
+    { type:"atm",       label:"ATM / Kiosk",          width:3,  height:2,   icon:"🏧", color:"#ecfeff", border:"#06b6d4", payment:true,  structure:false },
+    { type:"payment",   label:"Payment Terminal",     width:2,  height:2,   icon:"📟", color:"#fef9ec", border:"#f5861f", payment:true,  structure:false },
+    { type:"wall-ext",  label:"Exterior Wall",        width:12, height:1,   icon:"🧱", color:"#4b5563", border:"#1f2937", payment:false, structure:true },
+    { type:"wall-int",  label:"Interior Wall",        width:8,  height:0.5, icon:"▬",  color:"#9ca3af", border:"#6b7280", payment:false, structure:true },
+    { type:"door",      label:"Door",                 width:3,  height:1,   icon:"🚪", color:"#fef9c3", border:"#ca8a04", payment:false, structure:true },
+    { type:"window",    label:"Window",               width:4,  height:0.5, icon:"🪟", color:"#e0f2fe", border:"#0284c7", payment:false, structure:true },
+    { type:"restroom",  label:"Restroom",             width:6,  height:6,   icon:"🚻", color:"#f0fdf4", border:"#16a34a", payment:false, structure:true }
   ];
   var TIPS = {
     atm:      "Our ATMs are compliant, branded, and fully serviced for cannabis dispensaries.",
@@ -476,7 +365,7 @@
     checkout: "Position your checkout near Paybotic Financial payment terminals for optimal customer flow."
   };
 
-  var fixtures = [], selectedId = null, dragging = null, dragOff = {x:0,y:0};
+  var fixtures = [], selectedId = null, dragging = null, dragOff = {x:0, y:0};
   var roomW = 40, roomH = 25;
 
   function uid() { return Math.random().toString(36).slice(2,10); }
@@ -487,7 +376,7 @@
     ['store','payment','structure'].forEach(function(tab) {
       var el = $('fixture-' + tab);
       el.innerHTML = '';
-      FIXTURES.filter(function(f){
+      FIXTURES.filter(function(f) {
         if (tab === 'payment')   return f.payment;
         if (tab === 'structure') return f.structure;
         return !f.payment && !f.structure;
@@ -499,8 +388,10 @@
         btn.dataset.fixtureType = item.type;
         btn.innerHTML =
           '<span class="fixture-icon">' + item.icon + '</span>' +
-          '<span style="pointer-events:none"><span class="fixture-name" style="display:block">' + item.label + '</span>' +
-          '<span class="fixture-dims">' + item.width + ' × ' + item.height + ' ft</span></span>' +
+          '<span style="pointer-events:none">' +
+            '<span class="fixture-name" style="display:block">' + item.label + '</span>' +
+            '<span class="fixture-dims">' + item.width + ' × ' + item.height + ' ft</span>' +
+          '</span>' +
           '<span class="fixture-plus" style="color:' + item.border + '">+</span>';
         el.appendChild(btn);
       });
@@ -513,30 +404,22 @@
       $('fixture-' + t).style.display = t === active ? '' : 'none';
     });
   }
-  $('tab-store').addEventListener('click',     function(){ switchTab('store'); });
-  $('tab-payment').addEventListener('click',   function(){ switchTab('payment'); });
-  $('tab-structure').addEventListener('click', function(){ switchTab('structure'); });
 
-  document.addEventListener('click', function(e) {
-    var btn = e.target.closest('.fixture-btn');
-    if (!btn) return;
-    var type = btn.dataset.fixtureType;
-    var item = FIXTURES.find(function(f){ return f.type === type; });
-    if (item) addFixture(item);
-  });
-
+  $('tab-store').addEventListener('click',     function() { switchTab('store'); });
+  $('tab-payment').addEventListener('click',   function() { switchTab('payment'); });
+  $('tab-structure').addEventListener('click', function() { switchTab('structure'); });
   $('roomW').addEventListener('input', updateRoom);
   $('roomH').addEventListener('input', updateRoom);
 
   function updateRoom() {
     roomW = Math.max(10, parseInt($('roomW').value) || 10);
     roomH = Math.max(10, parseInt($('roomH').value) || 10);
-    var canvas = $('room-canvas');
-    canvas.style.width  = (roomW * PPF) + 'px';
-    canvas.style.height = (roomH * PPF) + 'px';
-    $('room-label').textContent = roomW + ' ft × ' + roomH + ' ft';
+    var c = $('room-canvas');
+    c.style.width  = (roomW * PPF) + 'px';
+    c.style.height = (roomH * PPF) + 'px';
+    $('room-label').textContent        = roomW + ' ft × ' + roomH + ' ft';
     $('canvas-dims-label').textContent = 'Room: ' + roomW + ' ft × ' + roomH + ' ft';
-    $('stat-total-area').textContent = (roomW * roomH) + ' sq ft';
+    $('stat-total-area').textContent   = (roomW * roomH) + ' sq ft';
     updateStats();
   }
 
@@ -587,66 +470,16 @@
     else el.classList.remove('selected');
   }
 
-  var canvas = $('room-canvas');
-
-  canvas.addEventListener('mousedown', function(e) {
-    var el = e.target.closest('.fixture-item');
-    if (el) {
-      e.preventDefault(); e.stopPropagation();
-      var fid = el.dataset.fid;
-      selectFixture(fid);
-      dragging = fid;
-      var f = fixtures.find(function(x){ return x.id === fid; });
-      var rect = canvas.getBoundingClientRect();
-      dragOff = { x: e.clientX - rect.left - f.x, y: e.clientY - rect.top - f.y };
-      el.style.cursor = 'grabbing';
-    } else {
-      selectFixture(null);
-    }
-  });
-
-  canvas.addEventListener('click', function(e) {
-    var el = e.target.closest('.fixture-item');
-    if (el) { e.stopPropagation(); selectFixture(el.dataset.fid); }
-  });
-
-  document.addEventListener('mouseup', function() {
-    if (dragging) { var el = $('f-' + dragging); if (el) el.style.cursor = 'grab'; }
-    dragging = null;
-  });
-
-  document.addEventListener('click', function(e) {
-    var btn = e.target.closest('.fixture-btn');
-    if (btn) {
-      var type = btn.dataset.fixtureType;
-      var item = FIXTURES.find(function(f){ return f.type === type; });
-      if (item) addFixture(item);
-      return;
-    }
-  });
-
-  canvas.addEventListener('mousemove', function(e) {
-    if (!dragging) return;
-    var f = fixtures.find(function(x){ return x.id === dragging; });
-    if (!f) return;
-    var rect = canvas.getBoundingClientRect();
-    f.x = snap(Math.max(0, Math.min(e.clientX - rect.left - dragOff.x, roomW*PPF - f.width)));
-    f.y = snap(Math.max(0, Math.min(e.clientY - rect.top  - dragOff.y, roomH*PPF - f.height)));
-    renderFixture(f);
-    $('prop-pos').textContent = '📍 Position: ' + (f.x/PPF).toFixed(1) + ' ft, ' + (f.y/PPF).toFixed(1) + ' ft';
-  });
-
-  canvas.addEventListener('mouseleave', function() {
-    if (dragging) { var el = $('f-' + dragging); if (el) el.style.cursor = 'grab'; dragging = null; }
-  });
-
   function selectFixture(id) {
     selectedId = id;
     fixtures.forEach(function(f) {
       var el = $('f-' + f.id);
-      if (el) { if (f.id === id) el.classList.add('selected'); else el.classList.remove('selected'); }
+      if (el) {
+        if (f.id === id) el.classList.add('selected');
+        else el.classList.remove('selected');
+      }
     });
-    var f = id ? fixtures.find(function(x){ return x.id === id; }) : null;
+    var f = id ? fixtures.find(function(x) { return x.id === id; }) : null;
     var emptyEl = $('pbc-props-empty');
     var formEl  = $('pbc-props-form');
     if (!f) {
@@ -656,41 +489,115 @@
     }
     if (emptyEl) emptyEl.style.display = 'none';
     if (formEl)  formEl.style.display  = '';
-    $('pp-icon').textContent = f.icon;
-    $('pp-label').textContent = f.label;
+    $('pp-icon').textContent           = f.icon;
+    $('pp-label').textContent          = f.label;
     $('props-preview').style.background = f.color;
-    $('prop-label').value = f.label;
-    $('prop-w').value = (f.width / PPF).toFixed(1);
-    $('prop-h').value = (f.height / PPF).toFixed(1);
-    $('prop-rot').value = f.rotation;
-    $('rot-val').textContent = f.rotation + '°';
-    $('prop-pos').textContent  = '📍 Position: ' + (f.x/PPF).toFixed(1) + ' ft, ' + (f.y/PPF).toFixed(1) + ' ft';
-    $('prop-foot').textContent = '📐 Footprint: ' + ((f.width/PPF)*(f.height/PPF)).toFixed(1) + ' sq ft';
+    $('prop-label').value              = f.label;
+    $('prop-w').value                  = (f.width  / PPF).toFixed(1);
+    $('prop-h').value                  = (f.height / PPF).toFixed(1);
+    $('prop-rot').value                = f.rotation;
+    $('rot-val').textContent           = f.rotation + '°';
+    $('prop-pos').textContent          = '📍 Position: ' + (f.x/PPF).toFixed(1) + ' ft, ' + (f.y/PPF).toFixed(1) + ' ft';
+    $('prop-foot').textContent         = '📐 Footprint: ' + ((f.width/PPF)*(f.height/PPF)).toFixed(1) + ' sq ft';
     var tip = TIPS[f.type];
     if (tip) { $('payment-tip').style.display = ''; $('payment-tip-text').textContent = tip; }
     else { $('payment-tip').style.display = 'none'; }
   }
 
+  var roomCanvas = $('room-canvas');
+
+  document.addEventListener('click', function(e) {
+    var btn = e.target.closest('.fixture-btn');
+    if (btn) {
+      var type = btn.dataset.fixtureType;
+      var item = FIXTURES.find(function(f) { return f.type === type; });
+      if (item) addFixture(item);
+    }
+  });
+
+  roomCanvas.addEventListener('mousedown', function(e) {
+    var el = e.target.closest('.fixture-item');
+    if (el) {
+      e.preventDefault();
+      e.stopPropagation();
+      var fid = el.dataset.fid;
+      selectFixture(fid);
+      dragging = fid;
+      var f = fixtures.find(function(x) { return x.id === fid; });
+      var rect = roomCanvas.getBoundingClientRect();
+      dragOff = { x: e.clientX - rect.left - f.x, y: e.clientY - rect.top - f.y };
+      el.style.cursor = 'grabbing';
+    } else {
+      selectFixture(null);
+    }
+  });
+
+  roomCanvas.addEventListener('click', function(e) {
+    var el = e.target.closest('.fixture-item');
+    if (el) {
+      e.stopPropagation();
+      selectFixture(el.dataset.fid);
+    }
+  });
+
+  document.addEventListener('mouseup', function() {
+    if (dragging) {
+      var el = $('f-' + dragging);
+      if (el) el.style.cursor = 'grab';
+    }
+    dragging = null;
+  });
+
+  roomCanvas.addEventListener('mousemove', function(e) {
+    if (!dragging) return;
+    var f = fixtures.find(function(x) { return x.id === dragging; });
+    if (!f) return;
+    var rect = roomCanvas.getBoundingClientRect();
+    f.x = snap(Math.max(0, Math.min(e.clientX - rect.left - dragOff.x, roomW*PPF - f.width)));
+    f.y = snap(Math.max(0, Math.min(e.clientY - rect.top  - dragOff.y, roomH*PPF - f.height)));
+    renderFixture(f);
+    $('prop-pos').textContent = '📍 Position: ' + (f.x/PPF).toFixed(1) + ' ft, ' + (f.y/PPF).toFixed(1) + ' ft';
+  });
+
+  roomCanvas.addEventListener('mouseleave', function() {
+    if (dragging) {
+      var el = $('f-' + dragging);
+      if (el) el.style.cursor = 'grab';
+      dragging = null;
+    }
+  });
+
   $('prop-label').addEventListener('input', function() {
     if (!selectedId) return;
-    var f = fixtures.find(function(x){ return x.id === selectedId; }); if (!f) return;
-    f.label = this.value; $('pp-label').textContent = this.value; renderFixture(f);
+    var f = fixtures.find(function(x) { return x.id === selectedId; });
+    if (!f) return;
+    f.label = this.value;
+    $('pp-label').textContent = this.value;
+    renderFixture(f);
   });
+
   $('prop-w').addEventListener('input', function() {
     if (!selectedId) return;
-    var f = fixtures.find(function(x){ return x.id === selectedId; }); if (!f) return;
+    var f = fixtures.find(function(x) { return x.id === selectedId; });
+    if (!f) return;
     f.width = Math.min(roomW * PPF, Math.max(PPF, parseFloat(this.value || 1) * PPF));
-    renderFixture(f); updateStats();
+    renderFixture(f);
+    updateStats();
   });
+
   $('prop-h').addEventListener('input', function() {
     if (!selectedId) return;
-    var f = fixtures.find(function(x){ return x.id === selectedId; }); if (!f) return;
+    var f = fixtures.find(function(x) { return x.id === selectedId; });
+    if (!f) return;
     f.height = Math.min(roomH * PPF, Math.max(PPF, parseFloat(this.value || 1) * PPF));
-    renderFixture(f); updateStats();
+    renderFixture(f);
+    updateStats();
   });
+
   $('prop-rot').addEventListener('input', function() {
     if (!selectedId) return;
-    var f = fixtures.find(function(x){ return x.id === selectedId; }); if (!f) return;
+    var f = fixtures.find(function(x) { return x.id === selectedId; });
+    if (!f) return;
     f.rotation = parseInt(this.value);
     $('rot-val').textContent = f.rotation + '°';
     renderFixture(f);
@@ -698,165 +605,209 @@
 
   $('btn-rotate').addEventListener('click', function() {
     if (!selectedId) return;
-    var f = fixtures.find(function(x){ return x.id === selectedId; }); if (!f) return;
+    var f = fixtures.find(function(x) { return x.id === selectedId; });
+    if (!f) return;
     f.rotation = (f.rotation + 90) % 360;
     $('prop-rot').value = f.rotation;
     $('rot-val').textContent = f.rotation + '°';
     renderFixture(f);
   });
+
   $('btn-duplicate').addEventListener('click', function() {
     if (!selectedId) return;
-    var f = fixtures.find(function(x){ return x.id === selectedId; }); if (!f) return;
+    var f = fixtures.find(function(x) { return x.id === selectedId; });
+    if (!f) return;
     var copy = Object.assign({}, f, {
-      id: uid(), label: f.label + ' Copy',
+      id: uid(),
+      label: f.label + ' Copy',
       x: Math.min(f.x + GRID, roomW * PPF - f.width),
       y: Math.min(f.y + GRID, roomH * PPF - f.height)
     });
-    fixtures.push(copy); renderFixture(copy); selectFixture(copy.id); updateStats();
+    fixtures.push(copy);
+    renderFixture(copy);
+    selectFixture(copy.id);
+    updateStats();
   });
+
   $('btn-delete').addEventListener('click', function() {
     if (!selectedId) return;
-    var el = $('f-' + selectedId); if (el) el.remove();
-    fixtures = fixtures.filter(function(f){ return f.id !== selectedId; });
+    var el = $('f-' + selectedId);
+    if (el) el.remove();
+    fixtures = fixtures.filter(function(f) { return f.id !== selectedId; });
     selectedId = null;
     $('pbc-props-empty').style.display = '';
-    $('pbc-props-form').style.display = 'none';
+    $('pbc-props-form').style.display  = 'none';
     updateStats();
     if (fixtures.length === 0) $('canvas-empty').style.display = '';
   });
 
   $('btn-clear').addEventListener('click', function() {
-    fixtures.forEach(function(f){ var el = $('f-'+f.id); if(el) el.remove(); });
-    fixtures = []; selectedId = null;
+    fixtures.forEach(function(f) { var el = $('f-'+f.id); if (el) el.remove(); });
+    fixtures = [];
+    selectedId = null;
     $('pbc-props-empty').style.display = '';
-    $('pbc-props-form').style.display = 'none';
-    $('canvas-empty').style.display = '';
+    $('pbc-props-form').style.display  = 'none';
+    $('canvas-empty').style.display    = '';
     updateStats();
   });
 
   function updateStats() {
     var total = roomW * roomH;
-    var fp = fixtures.reduce(function(s,f){ return s + (f.width/PPF)*(f.height/PPF); }, 0);
-    var open = Math.max(0, total - fp);
-    $('qs-area').textContent      = total + ' sq ft';
-    $('qs-count').textContent     = fixtures.length;
-    $('qs-footprint').textContent = fp.toFixed(1) + ' sq ft';
-    $('qs-open').textContent      = open.toFixed(1) + ' sq ft';
+    var fp    = fixtures.reduce(function(s,f) { return s + (f.width/PPF)*(f.height/PPF); }, 0);
+    var open  = Math.max(0, total - fp);
+    $('qs-area').textContent       = total + ' sq ft';
+    $('qs-count').textContent      = fixtures.length;
+    $('qs-footprint').textContent  = fp.toFixed(1) + ' sq ft';
+    $('qs-open').textContent       = open.toFixed(1) + ' sq ft';
     $('stat-total-area').textContent = total + ' sq ft';
-    var hasPay = fixtures.some(function(f){ return ['atm','payment','checkout'].indexOf(f.type) > -1; });
+    var hasPay = fixtures.some(function(f) { return ['atm','payment','checkout'].indexOf(f.type) > -1; });
     $('no-payment-tip').style.display = (!hasPay && fixtures.length > 0) ? '' : 'none';
     var btn = $('btn-to-review');
-    btn.disabled = fixtures.length === 0;
+    btn.disabled    = fixtures.length === 0;
     btn.textContent = fixtures.length === 0 ? 'Add fixtures to continue →' : 'Review My Layout →';
   }
 
   function goToStep(step) {
-    document.querySelectorAll('.step').forEach(function(s){ s.classList.remove('active'); });
+    document.querySelectorAll('.step').forEach(function(s) { s.classList.remove('active'); });
     $('step-' + step).classList.add('active');
     var map = { design:1, details:2, contact:3, done:4 };
     var cur = map[step] || 1;
     [1,2,3].forEach(function(i) {
-      var dot = $('pdot-'+i), lbl = $('plabel-'+i);
-      dot.className = 'prog-dot' + (i < cur ? ' done' : i === cur ? ' active' : '');
+      var dot = $('pdot-'   + i);
+      var lbl = $('plabel-' + i);
+      dot.className   = 'prog-dot' + (i < cur ? ' done' : i === cur ? ' active' : '');
       dot.textContent = i < cur ? '✓' : i;
-      lbl.className = 'prog-label' + (i === cur ? ' active' : '');
+      lbl.className   = 'prog-label' + (i === cur ? ' active' : '');
     });
     if (step === 'details') buildSummary();
   }
 
-  $('btn-to-review').addEventListener('click',    function(){ goToStep('details'); });
-  $('btn-back-design').addEventListener('click',  function(){ goToStep('design'); });
-  $('btn-to-contact').addEventListener('click',   function(){ goToStep('contact'); });
-  $('btn-back-details').addEventListener('click', function(){ goToStep('details'); });
+  $('btn-to-review').addEventListener('click',    function() { goToStep('details'); });
+  $('btn-back-design').addEventListener('click',  function() { goToStep('design');  });
+  $('btn-to-contact').addEventListener('click',   function() { goToStep('contact'); });
+  $('btn-back-details').addEventListener('click', function() { goToStep('details'); });
   $('btn-start-over').addEventListener('click', function() {
-    fixtures.forEach(function(f){ var el=$('f-'+f.id); if(el) el.remove(); });
-    fixtures=[]; selectedId=null;
-    $('pbc-props-empty').style.display='';
-    $('pbc-props-form').style.display='none';
-    $('canvas-empty').style.display='';
-    updateStats(); goToStep('design');
+    fixtures.forEach(function(f) { var el = $('f-'+f.id); if (el) el.remove(); });
+    fixtures   = [];
+    selectedId = null;
+    $('pbc-props-empty').style.display = '';
+    $('pbc-props-form').style.display  = 'none';
+    $('canvas-empty').style.display    = '';
+    updateStats();
+    goToStep('design');
   });
 
   function buildSummary() {
     var total = roomW * roomH;
-    var fp = fixtures.reduce(function(s,f){ return s + (f.width/PPF)*(f.height/PPF); }, 0);
+    var fp    = fixtures.reduce(function(s,f) { return s + (f.width/PPF)*(f.height/PPF); }, 0);
     $('sum-size').textContent  = roomW + ' × ' + roomH + ' ft';
     $('sum-area').textContent  = total + ' sq ft';
     $('sum-count').textContent = fixtures.length;
     $('sum-open').textContent  = Math.max(0, total - fp).toFixed(0) + ' sq ft';
 
-    var sc = $('summary-canvas');
+    var sc   = $('summary-canvas');
     var wrap = $('summary-canvas-wrap');
-    var cw = wrap.offsetWidth || 800;
+    var cw   = wrap.offsetWidth || 800;
     sc.width = cw;
     var roomWpx = roomW * PPF, roomHpx = roomH * PPF;
-    var scaleX = (cw - 48) / roomWpx;
-    var scaleY = 340 / roomHpx;
-    var scale = Math.min(scaleX, scaleY);
-    var drawW = roomWpx * scale, drawH = roomHpx * scale;
-    var offX = (cw - drawW) / 2, offY = 20;
-    sc.height = drawH + offY + 40;
+    var scale   = Math.min((cw - 48) / roomWpx, 340 / roomHpx);
+    var drawW   = roomWpx * scale, drawH = roomHpx * scale;
+    var offX    = (cw - drawW) / 2, offY = 20;
+    sc.height   = drawH + offY + 40;
+
     var ctx = sc.getContext('2d');
     ctx.clearRect(0, 0, sc.width, sc.height);
     ctx.fillStyle = '#fafcff';
     ctx.fillRect(offX, offY, drawW, drawH);
-    ctx.strokeStyle = 'rgba(36,77,116,0.07)'; ctx.lineWidth = 0.5;
-    var gridStep = PPF * scale;
-    for(var gx=0; gx<=drawW; gx+=gridStep){
-      ctx.beginPath(); ctx.moveTo(offX+gx,offY); ctx.lineTo(offX+gx,offY+drawH); ctx.stroke();
+
+    ctx.strokeStyle = 'rgba(36,77,116,0.07)';
+    ctx.lineWidth   = 0.5;
+    var gs = PPF * scale;
+    for (var gx = 0; gx <= drawW; gx += gs) {
+      ctx.beginPath(); ctx.moveTo(offX+gx, offY); ctx.lineTo(offX+gx, offY+drawH); ctx.stroke();
     }
-    for(var gy=0; gy<=drawH; gy+=gridStep){
-      ctx.beginPath(); ctx.moveTo(offX,offY+gy); ctx.lineTo(offX+drawW,offY+gy); ctx.stroke();
+    for (var gy = 0; gy <= drawH; gy += gs) {
+      ctx.beginPath(); ctx.moveTo(offX, offY+gy); ctx.lineTo(offX+drawW, offY+gy); ctx.stroke();
     }
+
     fixtures.forEach(function(f) {
-      var fx=offX+f.x*scale, fy=offY+f.y*scale, fw=f.width*scale, fh=f.height*scale;
+      var fx = offX + f.x * scale, fy = offY + f.y * scale;
+      var fw = f.width * scale,    fh = f.height * scale;
       ctx.save();
-      ctx.translate(fx+fw/2, fy+fh/2);
-      ctx.rotate((f.rotation||0)*Math.PI/180);
-      ctx.fillStyle=f.color; ctx.strokeStyle=f.border||'#94a3b8'; ctx.lineWidth=1.5;
-      ctx.beginPath(); ctx.roundRect(-fw/2,-fh/2,fw,fh,4); ctx.fill(); ctx.stroke();
-      var fontSize=Math.max(8,Math.min(11,fw/(f.label.length*0.6)));
-      ctx.font='bold '+fontSize+'px K2D,Arial'; ctx.fillStyle='#1a2535';
-      ctx.textAlign='center'; ctx.textBaseline='middle';
-      ctx.fillText(f.label,0,-3);
-      ctx.font=(fontSize-1)+'px K2D,Arial'; ctx.fillStyle='#64748b';
-      ctx.fillText((f.width/PPF).toFixed(0)+'×'+(f.height/PPF).toFixed(0)+'ft',0,fontSize);
+      ctx.translate(fx + fw/2, fy + fh/2);
+      ctx.rotate((f.rotation || 0) * Math.PI / 180);
+      ctx.fillStyle   = f.color;
+      ctx.strokeStyle = f.border || '#94a3b8';
+      ctx.lineWidth   = 1.5;
+      ctx.beginPath();
+      ctx.roundRect(-fw/2, -fh/2, fw, fh, 4);
+      ctx.fill();
+      ctx.stroke();
+      var fs = Math.max(8, Math.min(11, fw / (f.label.length * 0.6)));
+      ctx.font         = 'bold ' + fs + 'px K2D,Arial';
+      ctx.fillStyle    = '#1a2535';
+      ctx.textAlign    = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(f.label, 0, -3);
+      ctx.font      = (fs - 1) + 'px K2D,Arial';
+      ctx.fillStyle = '#64748b';
+      ctx.fillText((f.width/PPF).toFixed(0) + '×' + (f.height/PPF).toFixed(0) + 'ft', 0, fs);
       ctx.restore();
     });
-    ctx.strokeStyle='#244d74'; ctx.lineWidth=2.5;
-    ctx.beginPath(); ctx.rect(offX,offY,drawW,drawH); ctx.stroke();
-    var barFt=10, barPx=barFt*PPF*scale, bx=offX+10, by=offY+drawH-14;
-    ctx.strokeStyle='#244d74'; ctx.lineWidth=2;
-    ctx.beginPath(); ctx.moveTo(bx,by); ctx.lineTo(bx+barPx,by); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(bx,by-4); ctx.lineTo(bx,by+4); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(bx+barPx,by-4); ctx.lineTo(bx+barPx,by+4); ctx.stroke();
-    ctx.font='9px K2D,Arial'; ctx.fillStyle='#244d74';
-    ctx.textAlign='center'; ctx.fillText('10 ft',bx+barPx/2,by-5);
-    if(fixtures.length===0){
-      ctx.font='13px K2D,Arial'; ctx.fillStyle='#94a3b8';
-      ctx.textAlign='center'; ctx.textBaseline='middle';
-      ctx.fillText('No fixtures placed',offX+drawW/2,offY+drawH/2);
-    }
-    sc.onclick=function(){ goToStep('design'); };
-    sc.style.cursor='pointer';
 
-    var list=$('fixture-list'); list.innerHTML='';
-    fixtures.forEach(function(f){
-      var isPay=['atm','payment','checkout'].indexOf(f.type)>-1;
-      var div=document.createElement('div');
-      div.className='fixture-list-item'; div.style.background=f.color;
-      div.innerHTML='<span style="font-size:20px">'+f.icon+'</span>'+
-        '<div><div style="font-weight:600;font-size:13px;color:#1a2535">'+f.label+'</div>'+
-        '<div style="font-size:11px;color:#64748b">'+(f.width/PPF).toFixed(1)+' × '+(f.height/PPF).toFixed(1)+' ft</div></div>'+
-        (isPay?'<span class="fli-badge">💳 Payment</span>':'');
+    ctx.strokeStyle = '#244d74';
+    ctx.lineWidth   = 2.5;
+    ctx.beginPath();
+    ctx.rect(offX, offY, drawW, drawH);
+    ctx.stroke();
+
+    var barPx = 10 * PPF * scale;
+    var bx = offX + 10, by = offY + drawH - 14;
+    ctx.strokeStyle = '#244d74';
+    ctx.lineWidth   = 2;
+    ctx.beginPath(); ctx.moveTo(bx, by); ctx.lineTo(bx+barPx, by); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(bx, by-4); ctx.lineTo(bx, by+4); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(bx+barPx, by-4); ctx.lineTo(bx+barPx, by+4); ctx.stroke();
+    ctx.font      = '9px K2D,Arial';
+    ctx.fillStyle = '#244d74';
+    ctx.textAlign = 'center';
+    ctx.fillText('10 ft', bx + barPx/2, by - 5);
+
+    if (fixtures.length === 0) {
+      ctx.font         = '13px K2D,Arial';
+      ctx.fillStyle    = '#94a3b8';
+      ctx.textAlign    = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('No fixtures placed', offX + drawW/2, offY + drawH/2);
+    }
+
+    sc.onclick      = function() { goToStep('design'); };
+    sc.style.cursor = 'pointer';
+
+    var list = $('fixture-list');
+    list.innerHTML = '';
+    fixtures.forEach(function(f) {
+      var isPay = ['atm','payment','checkout'].indexOf(f.type) > -1;
+      var div = document.createElement('div');
+      div.className        = 'fixture-list-item';
+      div.style.background = f.color;
+      div.innerHTML =
+        '<span style="font-size:20px">' + f.icon + '</span>' +
+        '<div>' +
+          '<div style="font-weight:600;font-size:13px;color:#1a2535">' + f.label + '</div>' +
+          '<div style="font-size:11px;color:#64748b">' + (f.width/PPF).toFixed(1) + ' × ' + (f.height/PPF).toFixed(1) + ' ft</div>' +
+        '</div>' +
+        (isPay ? '<span class="fli-badge">💳 Payment</span>' : '');
       list.appendChild(div);
     });
-    var hasPay=fixtures.some(function(f){ return ['atm','payment','checkout'].indexOf(f.type)>-1; });
-    $('details-no-payment').style.display=hasPay?'none':'';
+
+    var hasPay = fixtures.some(function(f) { return ['atm','payment','checkout'].indexOf(f.type) > -1; });
+    $('details-no-payment').style.display = hasPay ? 'none' : '';
   }
 
   buildLibrary();
   updateRoom();
+
 })();
 </script>
 </body>
