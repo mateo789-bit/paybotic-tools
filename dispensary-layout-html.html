@@ -238,7 +238,7 @@
   <div class="header-divider"></div>
   <div>
     <div class="header-title">Dispensary Layout Planner</div>
-    <div class="header-sub">Design your store · Get a free payment consultation</div>
+    <div class="header-sub">Design your store · Get a free Paybotic Financial consultation</div>
   </div>
   <div id="progress">
     <div class="prog-step">
@@ -415,7 +415,7 @@
         <div class="contact-header">
           <div style="font-size:40px;margin-bottom:8px;">📋</div>
           <h2>Get Your Free Layout Report</h2>
-          <p>A Paybotic specialist will review your layout and recommend the best payment solutions for your dispensary — completely free.</p>
+          <p>A Paybotic Financial specialist will review your layout and recommend the best payment solutions for your dispensary — completely free.</p>
         </div>
         <label class="field-label">Business Name</label>
         <input type="text" id="c-business" placeholder="Green Leaf Dispensary" style="margin-bottom:10px;"/>
@@ -448,17 +448,16 @@
     <div class="inner">
       <div class="card done-card">
         <div style="font-size:56px;margin-bottom:12px;">🎉</div>
-        <h2>You're all set, <span id="done-name">there</span>!</h2>
-        <p>A Paybotic specialist will reach out to <strong id="done-email">you</strong> within 1 business day with your personalized layout report and payment solution recommendations.</p>
+        <h2>Thank you!</h2>
+        <p>A Paybotic Financial specialist will be in touch within 1 business day with your personalized layout report and payment solution recommendations.</p>
         <div class="done-summary">
           <h4>Your Layout at a Glance</h4>
           <div class="ds-row"><span class="ds-label">Room Size</span><span class="ds-val" id="ds-size">—</span></div>
           <div class="ds-row"><span class="ds-label">Total Area</span><span class="ds-val" id="ds-area">—</span></div>
           <div class="ds-row"><span class="ds-label">Fixtures</span><span class="ds-val" id="ds-count">—</span></div>
-          <div class="ds-row"><span class="ds-label">Business</span><span class="ds-val" id="ds-biz">—</span></div>
         </div>
         <div class="step-btns">
-          <a href="https://paybotic.com" target="_blank" rel="noopener" class="btn-primary" style="display:block;text-align:center;text-decoration:none;flex:1;">Visit Paybotic.com →</a>
+          <a href="https://paybotic.com" target="_blank" rel="noopener" class="btn-primary" style="display:block;text-align:center;text-decoration:none;flex:1;">Visit PayboticFinancial.com →</a>
           <button class="btn-secondary" id="btn-start-over" style="flex:1;">Start New Layout</button>
         </div>
       </div>
@@ -491,8 +490,8 @@
   ];
   var TIPS = {
     atm:      "Our ATMs are compliant, branded, and fully serviced for cannabis dispensaries.",
-    payment:  "Paybotic's payment terminals support debit, cashless ATM & digital wallets.",
-    checkout: "Position your checkout near payment terminals for optimal customer flow."
+    payment:  "Paybotic Financial's payment terminals support debit, cashless ATM & digital wallets.",
+    checkout: "Position your checkout near Paybotic Financial payment terminals for optimal customer flow."
   };
 
   var fixtures = [], selectedId = null, dragging = null, dragOff = {x:0,y:0};
@@ -844,12 +843,12 @@
     var cw = wrap.offsetWidth || 800;
     sc.width = cw;
     var roomWpx = roomW * PPF, roomHpx = roomH * PPF;
-    var scaleX = (cw - 40) / roomWpx;
-    var scaleY = 320 / roomHpx;
-    var scale = Math.min(scaleX, scaleY, 1.4);
+    var scaleX = (cw - 48) / roomWpx;
+    var scaleY = 340 / roomHpx;
+    var scale = Math.min(scaleX, scaleY);
     var drawW = roomWpx * scale, drawH = roomHpx * scale;
-    var offX = (cw - drawW) / 2, offY = (320 - drawH) / 2;
-    sc.height = drawH + offY * 2;
+    var offX = (cw - drawW) / 2, offY = 20;
+    sc.height = drawH + offY + 40;
     var ctx = sc.getContext('2d');
     ctx.clearRect(0, 0, sc.width, sc.height);
 
@@ -944,15 +943,9 @@
 
   /* ---- SUBMIT ---- */
   function submitLead() {
-    var name  = $('c-name').value.trim();
-    var email = $('c-email').value.trim();
-    if (!name || !email) { alert('Please enter your name and email to continue.'); return; }
-    $('done-name').textContent  = name.split(' ')[0];
-    $('done-email').textContent = email;
-    $('ds-size').textContent    = roomW + ' × ' + roomH + ' ft';
-    $('ds-area').textContent    = (roomW * roomH) + ' sq ft';
-    $('ds-count').textContent   = fixtures.length;
-    $('ds-biz').textContent     = $('c-business').value.trim() || '—';
+    $('ds-size').textContent  = roomW + ' × ' + roomH + ' ft';
+    $('ds-area').textContent  = (roomW * roomH) + ' sq ft';
+    $('ds-count').textContent = fixtures.length;
     goToStep('done');
   }
 
