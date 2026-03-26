@@ -615,6 +615,16 @@
     dragging = null;
   });
 
+  document.addEventListener('click', function(e) {
+    var btn = e.target.closest('.fixture-btn');
+    if (btn) {
+      var type = btn.dataset.fixtureType;
+      var item = FIXTURES.find(function(f){ return f.type === type; });
+      if (item) addFixture(item);
+      return;
+    }
+  });
+
   canvas.addEventListener('mousemove', function(e) {
     if (!dragging) return;
     var f = fixtures.find(function(x){ return x.id === dragging; });
