@@ -445,6 +445,19 @@ input[type=range] { width: 100%; accent-color: #244d74; margin-top: 6px; }
       el = document.createElement('div');
       el.id = 'f-' + f.id;
       el.className = 'fixture-item type-' + f.type;
+      el.addEventListener('mousedown', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        selectFixture(f.id);
+        dragging = f.id;
+        var rect = roomCanvas.getBoundingClientRect();
+        dragOff = { x: e.clientX - rect.left - f.x, y: e.clientY - rect.top - f.y };
+        el.style.cursor = 'grabbing';
+      });
+      el.addEventListener('click', function(e) {
+        e.stopPropagation();
+        selectFixture(f.id);
+      });
       $('room-canvas').appendChild(el);
     }
     el.style.left            = f.x + 'px';
@@ -488,7 +501,7 @@ input[type=range] { width: 100%; accent-color: #244d74; margin-top: 6px; }
       return;
     }
     if (emptyEl) emptyEl.style.display = 'none';
-    if (formEl)  formEl.style.display  = '';
+    if (formEl)  formEl.style.display  = 'block';
     $('pp-icon').textContent           = f.icon;
     $('pp-label').textContent          = f.label;
     $('props-preview').style.background = f.color;
@@ -516,28 +529,11 @@ input[type=range] { width: 100%; accent-color: #244d74; margin-top: 6px; }
   });
 
   roomCanvas.addEventListener('mousedown', function(e) {
-    var el = e.target.closest('.fixture-item');
-    if (el) {
-      e.preventDefault();
-      e.stopPropagation();
-      var fid = el.dataset.fid;
-      selectFixture(fid);
-      dragging = fid;
-      var f = fixtures.find(function(x) { return x.id === fid; });
-      var rect = roomCanvas.getBoundingClientRect();
-      dragOff = { x: e.clientX - rect.left - f.x, y: e.clientY - rect.top - f.y };
-      el.style.cursor = 'grabbing';
-    } else {
-      selectFixture(null);
-    }
+    if (!e.target.closest('.fixture-item')) selectFixture(null);
   });
 
   roomCanvas.addEventListener('click', function(e) {
-    var el = e.target.closest('.fixture-item');
-    if (el) {
-      e.stopPropagation();
-      selectFixture(el.dataset.fid);
-    }
+    if (!e.target.closest('.fixture-item')) selectFixture(null);
   });
 
   document.addEventListener('mouseup', function() {
