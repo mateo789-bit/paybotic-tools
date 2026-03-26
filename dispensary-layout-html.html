@@ -95,7 +95,6 @@ input:focus { border-color: #244d74; }
 .contact-header { text-align: center; margin-bottom: 20px; }
 .contact-header h2 { font-weight: 800; font-size: 22px; color: #244d74; }
 .contact-header p { color: #64748b; font-size: 14px; margin-top: 6px; }
-.trust-box { padding: 12px 14px; background: #f4f6f9; border-radius: 10px; font-size: 12px; color: #64748b; margin-bottom: 16px; display: flex; gap: 8px; }
 .perks { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
 .perk { font-size: 13px; color: #1a2535; }
 .done-card { padding: 36px; }
@@ -109,6 +108,39 @@ input:focus { border-color: #244d74; }
 input[type=range] { width: 100%; accent-color: #244d74; margin-top: 6px; }
 .rotation-row { display: flex; justify-content: space-between; align-items: center; }
 .rotation-val { font-size: 12px; font-weight: 600; color: #244d74; }
+
+/* Export modal styles */
+#export-modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000;
+  display: flex; align-items: center; justify-content: center;
+  backdrop-filter: blur(4px);
+}
+#export-modal {
+  background: #fff; border-radius: 20px; padding: 32px; width: 420px; max-width: 95vw;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+  animation: modalIn 0.2s ease;
+}
+@keyframes modalIn { from { transform: scale(0.92); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.modal-header { text-align: center; margin-bottom: 24px; }
+.modal-header .modal-icon { font-size: 40px; margin-bottom: 8px; }
+.modal-header h3 { font-weight: 800; font-size: 20px; color: #244d74; margin-bottom: 6px; }
+.modal-header p { font-size: 13px; color: #64748b; }
+.export-email-wrap { margin-bottom: 16px; }
+.export-email-wrap label { font-size: 11px; font-weight: 700; color: #244d74; text-transform: uppercase; letter-spacing: 0.04em; display: block; margin-bottom: 6px; }
+#export-email { width: 100%; padding: 11px 14px; border-radius: 10px; border: 1.5px solid #d5d5d5; font-size: 14px; font-family: inherit; outline: none; transition: border 0.15s; }
+#export-email:focus { border-color: #244d74; }
+#export-email.error { border-color: #ef4444; }
+.export-error { color: #ef4444; font-size: 12px; margin-top: 5px; display: none; }
+.export-modal-btns { display: flex; gap: 10px; margin-top: 20px; }
+.export-modal-btns .btn-primary, .export-modal-btns .btn-secondary { flex: 1; }
+.btn-export {
+  background: #244d74; color: #fff; border: none; border-radius: 10px;
+  padding: 11px 18px; cursor: pointer; font-weight: 700; font-size: 13px;
+  font-family: inherit; transition: background 0.15s; display: flex; align-items: center;
+  justify-content: center; gap: 7px; white-space: nowrap;
+}
+.btn-export:hover { background: #1a3855; }
+
 @media (max-width: 900px) {
   #step-design .grid { grid-template-columns: 1fr; }
   .summary-stats { grid-template-columns: repeat(2,1fr); }
@@ -165,7 +197,7 @@ input[type=range] { width: 100%; accent-color: #244d74; margin-top: 6px; }
           <div class="section-title">🏪 Fixture Library</div>
           <div class="tabs">
             <button class="tab-btn active" id="tab-store">Store</button>
-            <button class="tab-btn" id="tab-payment">💳 Payment</button>
+            <button class="tab-btn" id="tab-payment">💵 Payment</button>
             <button class="tab-btn" id="tab-structure">🧱 Structure</button>
           </div>
           <div id="fixture-store"></div>
@@ -244,7 +276,7 @@ input[type=range] { width: 100%; accent-color: #244d74; margin-top: 6px; }
             <button class="btn-danger" id="btn-delete">🗑 Delete</button>
           </div>
           <div class="tip-box" id="payment-tip" style="display:none;">
-            <div class="tip-title">💳 PAYBOTIC FINANCIAL TIP</div>
+            <div class="tip-title">💵 PAYBOTIC FINANCIAL TIP</div>
             <div class="tip-text" id="payment-tip-text"></div>
           </div>
         </div>
@@ -278,6 +310,10 @@ input[type=range] { width: 100%; accent-color: #244d74; margin-top: 6px; }
         </div>
         <div class="step-btns">
           <button class="btn-secondary" id="btn-back-design">← Back to Design</button>
+          <button class="btn-export" id="btn-export-layout" style="flex:1;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export Layout
+          </button>
           <button class="btn-primary" id="btn-to-contact" style="flex:2;">Get in Touch with Paybotic Financial →</button>
         </div>
       </div>
@@ -288,13 +324,9 @@ input[type=range] { width: 100%; accent-color: #244d74; margin-top: 6px; }
     <div class="inner">
       <div class="card">
         <div class="contact-header">
-          <div style="font-size:40px;margin-bottom:8px;">💳</div>
+          <div style="font-size:40px;margin-bottom:8px;">💵</div>
           <h2>Streamline Your Payments & Banking</h2>
           <p>Get in touch with us to learn how Paybotic Financial can help streamline your payments, checkout, and banking needs — built specifically for cannabis dispensaries.</p>
-        </div>
-        <div class="trust-box">
-          <span>🔒</span>
-          <span>Your information is secure. Paybotic Financial only uses your details to follow up with you directly. No spam, ever.</span>
         </div>
         <div class="perks">
           <div class="perk">✅ Pay-by-bank &amp; digital payment solutions</div>
@@ -337,6 +369,28 @@ input[type=range] { width: 100%; accent-color: #244d74; margin-top: 6px; }
 
 </div>
 
+<!-- Export Modal -->
+<div id="export-modal-overlay" style="display:none;">
+  <div id="export-modal">
+    <div class="modal-header">
+      <div class="modal-icon">📥</div>
+      <h3>Export Your Floor Plan</h3>
+      <p>Enter your email to receive a copy of your layout design.</p>
+    </div>
+    <div class="export-email-wrap">
+      <label for="export-email">Email Address <span style="color:#ef4444;">*</span></label>
+      <input type="email" id="export-email" placeholder="you@example.com" autocomplete="email"/>
+      <div class="export-error" id="export-error">Please enter a valid email address.</div>
+    </div>
+    <div class="export-modal-btns">
+      <button class="btn-secondary" id="btn-export-cancel">Cancel</button>
+      <button class="btn-primary" id="btn-export-confirm">
+        <span id="export-btn-text">⬇ Download PNG</span>
+      </button>
+    </div>
+  </div>
+</div>
+
 <script>
 (function() {
   var GRID = 20, PPF = 14;
@@ -350,9 +404,9 @@ input[type=range] { width: 100%; accent-color: #244d74; margin-top: 6px; }
     { type:"budtender", label:"Budtender Station",    width:4,  height:3,   icon:"🌿", color:"#f0fdf4", border:"#16a34a", payment:false, structure:false },
     { type:"entrance",  label:"Entrance / Reception", width:6,  height:3,   icon:"🚪", color:"#eff6ff", border:"#3b82f6", payment:false, structure:false },
     { type:"camera",    label:"Security Camera Zone", width:3,  height:3,   icon:"📷", color:"#fdf4ff", border:"#a855f7", payment:false, structure:false },
-    { type:"checkout",  label:"Checkout Counter",     width:8,  height:3,   icon:"💳", color:"#fff3e8", border:"#f5861f", payment:true,  structure:false },
+    { type:"checkout",  label:"Checkout Counter",     width:8,  height:3,   icon:"💵", color:"#fff3e8", border:"#f5861f", payment:true,  structure:false },
     { type:"atm",       label:"ATM / Kiosk",          width:3,  height:2,   icon:"🏧", color:"#ecfeff", border:"#06b6d4", payment:true,  structure:false },
-    { type:"payment",   label:"Payment Terminal",     width:2,  height:2,   icon:"📟", color:"#fef9ec", border:"#f5861f", payment:true,  structure:false },
+    { type:"payment",   label:"Payment Terminal",     width:2,  height:2,   icon:"💵", color:"#fef9ec", border:"#f5861f", payment:true,  structure:false },
     { type:"wall-ext",  label:"Exterior Wall",        width:12, height:1,   icon:"🧱", color:"#4b5563", border:"#1f2937", payment:false, structure:true },
     { type:"wall-int",  label:"Interior Wall",        width:8,  height:0.5, icon:"▬",  color:"#9ca3af", border:"#6b7280", payment:false, structure:true },
     { type:"door",      label:"Door",                 width:3,  height:1,   icon:"🚪", color:"#fef9c3", border:"#ca8a04", payment:false, structure:true },
@@ -793,12 +847,316 @@ input[type=range] { width: 100%; accent-color: #244d74; margin-top: 6px; }
           '<div style="font-weight:600;font-size:13px;color:#1a2535">' + f.label + '</div>' +
           '<div style="font-size:11px;color:#64748b">' + (f.width/PPF).toFixed(1) + ' × ' + (f.height/PPF).toFixed(1) + ' ft</div>' +
         '</div>' +
-        (isPay ? '<span class="fli-badge">💳 Payment</span>' : '');
+        (isPay ? '<span class="fli-badge">💵 Payment</span>' : '');
       list.appendChild(div);
     });
 
     var hasPay = fixtures.some(function(f) { return ['atm','payment','checkout'].indexOf(f.type) > -1; });
     $('details-no-payment').style.display = hasPay ? 'none' : '';
+  }
+
+  // ── Export functionality ──────────────────────────────────────────
+  $('btn-export-layout').addEventListener('click', function() {
+    $('export-email').value = '';
+    $('export-email').classList.remove('error');
+    $('export-error').style.display = 'none';
+    $('export-modal-overlay').style.display = 'flex';
+    setTimeout(function() { $('export-email').focus(); }, 100);
+  });
+
+  $('btn-export-cancel').addEventListener('click', function() {
+    $('export-modal-overlay').style.display = 'none';
+  });
+
+  $('export-modal-overlay').addEventListener('click', function(e) {
+    if (e.target === this) $('export-modal-overlay').style.display = 'none';
+  });
+
+  $('export-email').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') $('btn-export-confirm').click();
+  });
+
+  $('btn-export-confirm').addEventListener('click', function() {
+    var email = $('export-email').value.trim();
+    var emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRe.test(email)) {
+      $('export-email').classList.add('error');
+      $('export-error').style.display = 'block';
+      $('export-email').focus();
+      return;
+    }
+    $('export-email').classList.remove('error');
+    $('export-error').style.display = 'none';
+    $('export-modal-overlay').style.display = 'none';
+    submitEmailToZoho(email);
+    generateExportPNG(email);
+  });
+
+  function submitEmailToZoho(email) {
+    try {
+      // Use a hidden iframe + form to avoid CORS issues with Zoho Forms
+      var iframeName = 'zoho_submit_frame_' + Date.now();
+      var iframe = document.createElement('iframe');
+      iframe.name = iframeName;
+      iframe.style.display = 'none';
+      document.body.appendChild(iframe);
+
+      var form = document.createElement('form');
+      form.method = 'POST';
+      form.action = 'https://forms.zohopublic.com/Paybotic/form/DispensaryLayoutToolDesignExport/formperma/PcGxkubdxc-zSK9DKW78D2WbwcGBqPZAhj4FOjO-NE4/htmlRecords/submit';
+      form.target = iframeName;
+      form.style.display = 'none';
+      form.setAttribute('accept-charset', 'UTF-8');
+      form.setAttribute('enctype', 'multipart/form-data');
+
+      var fields = {
+        'Email': email,
+        'zf_referrer_name': '',
+        'zf_redirect_url': '',
+        'zc_gad': ''
+      };
+      Object.keys(fields).forEach(function(key) {
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        input.value = fields[key];
+        form.appendChild(input);
+      });
+
+      document.body.appendChild(form);
+      form.submit();
+
+      // Clean up after submission
+      setTimeout(function() {
+        if (form.parentNode) form.parentNode.removeChild(form);
+        if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
+      }, 5000);
+    } catch(e) { /* fail silently */ }
+  }
+
+  function generateExportPNG(email) {
+    var total = roomW * roomH;
+    var fp    = fixtures.reduce(function(s,f) { return s + (f.width/PPF)*(f.height/PPF); }, 0);
+
+    // Canvas dimensions
+    var HEADER_H  = 72;
+    var FOOTER_H  = 64;
+    var SIDEBAR_W = 220;
+    var PAD       = 28;
+    var roomWpx   = roomW * PPF;
+    var roomHpx   = roomH * PPF;
+    var maxDrawW  = 900;
+    var scale     = Math.min(maxDrawW / roomWpx, 480 / roomHpx, 1.8);
+    var drawW     = roomWpx * scale;
+    var drawH     = roomHpx * scale;
+    var totalW    = drawW + SIDEBAR_W + PAD * 3;
+    var totalH    = HEADER_H + drawH + FOOTER_H + PAD * 2 + 20;
+
+    var ec = document.createElement('canvas');
+    ec.width  = Math.ceil(totalW);
+    ec.height = Math.ceil(totalH);
+    var ctx = ec.getContext('2d');
+
+    // Background
+    ctx.fillStyle = '#f4f6f9';
+    ctx.fillRect(0, 0, ec.width, ec.height);
+
+    // ── Header bar ──────────────────────────────────
+    ctx.fillStyle = '#244d74';
+    ctx.fillRect(0, 0, ec.width, HEADER_H);
+
+    // Brand name
+    ctx.font = 'bold 22px Arial';
+    ctx.fillStyle = '#f5861f';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('PAYBOTIC', 24, 28);
+    ctx.font = '11px Arial';
+    ctx.fillStyle = 'rgba(255,255,255,0.6)';
+    ctx.fillText('FINANCIAL', 24, 50);
+
+    // Header divider
+    ctx.fillStyle = 'rgba(255,255,255,0.25)';
+    ctx.fillRect(150, 14, 1, 42);
+
+    // Header title
+    ctx.font = 'bold 16px Arial';
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText('Dispensary Layout Plan', 162, 28);
+    ctx.font = '11px Arial';
+    ctx.fillStyle = 'rgba(255,255,255,0.6)';
+    ctx.fillText(roomW + ' × ' + roomH + ' ft  ·  ' + fixtures.length + ' fixtures  ·  Generated ' + new Date().toLocaleDateString(), 162, 50);
+
+    // Dollar sign badge top-right
+    ctx.font = 'bold 15px Arial';
+    ctx.fillStyle = '#f5861f';
+    ctx.textAlign = 'right';
+    ctx.fillText('💵 payboticfinancial.com', ec.width - 20, 36);
+
+    // ── Floor plan area ──────────────────────────────
+    var floorX = PAD;
+    var floorY = HEADER_H + PAD;
+
+    // White card background for floor plan
+    ctx.fillStyle = '#ffffff';
+    ctx.shadowColor = 'rgba(36,77,116,0.12)';
+    ctx.shadowBlur = 16;
+    roundRect(ctx, floorX - 8, floorY - 8, drawW + 16, drawH + 16, 12);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // Grid
+    ctx.strokeStyle = 'rgba(36,77,116,0.08)';
+    ctx.lineWidth = 0.5;
+    var gs = PPF * scale;
+    for (var gx = 0; gx <= drawW; gx += gs) {
+      ctx.beginPath(); ctx.moveTo(floorX+gx, floorY); ctx.lineTo(floorX+gx, floorY+drawH); ctx.stroke();
+    }
+    for (var gy = 0; gy <= drawH; gy += gs) {
+      ctx.beginPath(); ctx.moveTo(floorX, floorY+gy); ctx.lineTo(floorX+drawW, floorY+gy); ctx.stroke();
+    }
+
+    // Fixtures
+    fixtures.forEach(function(f) {
+      var fx = floorX + f.x * scale;
+      var fy = floorY + f.y * scale;
+      var fw = f.width * scale;
+      var fh = f.height * scale;
+      ctx.save();
+      ctx.translate(fx + fw/2, fy + fh/2);
+      ctx.rotate((f.rotation || 0) * Math.PI / 180);
+      ctx.fillStyle   = f.color;
+      ctx.strokeStyle = f.border || '#94a3b8';
+      ctx.lineWidth   = 1.5;
+      roundRect(ctx, -fw/2, -fh/2, fw, fh, 4);
+      ctx.fill();
+      ctx.stroke();
+      var fs2 = Math.max(7, Math.min(11, fw / (f.label.length * 0.62)));
+      ctx.font = 'bold ' + fs2 + 'px Arial';
+      ctx.fillStyle    = '#1a2535';
+      ctx.textAlign    = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(f.label, 0, -3);
+      ctx.font = (fs2 - 1) + 'px Arial';
+      ctx.fillStyle = '#64748b';
+      ctx.fillText((f.width/PPF).toFixed(0) + '×' + (f.height/PPF).toFixed(0) + 'ft', 0, fs2 + 2);
+      ctx.restore();
+    });
+
+    // Room border
+    ctx.strokeStyle = '#244d74';
+    ctx.lineWidth   = 2.5;
+    ctx.strokeRect(floorX, floorY, drawW, drawH);
+
+    // Scale bar
+    var barPx2 = 10 * PPF * scale;
+    var bx2 = floorX + 10, by2 = floorY + drawH - 16;
+    ctx.strokeStyle = '#244d74'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(bx2, by2); ctx.lineTo(bx2+barPx2, by2); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(bx2, by2-4); ctx.lineTo(bx2, by2+4); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(bx2+barPx2, by2-4); ctx.lineTo(bx2+barPx2, by2+4); ctx.stroke();
+    ctx.font = '9px Arial'; ctx.fillStyle = '#244d74'; ctx.textAlign = 'center';
+    ctx.fillText('10 ft', bx2 + barPx2/2, by2 - 6);
+
+    // Room size label
+    ctx.font = '10px Arial'; ctx.fillStyle = 'rgba(36,77,116,0.5)';
+    ctx.textAlign = 'right';
+    ctx.fillText(roomW + ' ft × ' + roomH + ' ft', floorX + drawW - 6, floorY + 14);
+
+    // ── Sidebar ──────────────────────────────────────
+    var sideX = floorX + drawW + PAD;
+    var sideY = floorY;
+
+    // Stats card
+    ctx.fillStyle = '#ffffff';
+    ctx.shadowColor = 'rgba(36,77,116,0.1)';
+    ctx.shadowBlur = 10;
+    roundRect(ctx, sideX, sideY, SIDEBAR_W, 130, 12);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    var stats = [
+      ['Total Area',     total + ' sq ft'],
+      ['Open Floor',     Math.max(0, total - fp).toFixed(0) + ' sq ft'],
+      ['Fixtures',       fixtures.length + ''],
+      ['Fixture Area',   fp.toFixed(1) + ' sq ft']
+    ];
+    ctx.font = 'bold 11px Arial'; ctx.fillStyle = '#244d74';
+    ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+    ctx.fillText('LAYOUT STATS', sideX + 12, sideY + 18);
+    stats.forEach(function(s, i) {
+      var rowY = sideY + 36 + i * 22;
+      ctx.font = '11px Arial'; ctx.fillStyle = '#64748b';
+      ctx.fillText(s[0], sideX + 12, rowY);
+      ctx.font = 'bold 11px Arial'; ctx.fillStyle = '#244d74';
+      ctx.textAlign = 'right';
+      ctx.fillText(s[1], sideX + SIDEBAR_W - 12, rowY);
+      ctx.textAlign = 'left';
+    });
+
+    // Fixture list
+    var listY = sideY + 146;
+    ctx.font = 'bold 11px Arial'; ctx.fillStyle = '#244d74';
+    ctx.textAlign = 'left';
+    ctx.fillText('FIXTURE LIST', sideX + 12, listY);
+    listY += 18;
+    fixtures.forEach(function(f, i) {
+      if (listY + 28 > floorY + drawH) return;
+      ctx.fillStyle = f.color;
+      ctx.shadowColor = 'rgba(0,0,0,0.06)';
+      ctx.shadowBlur = 4;
+      roundRect(ctx, sideX, listY, SIDEBAR_W, 24, 6);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = f.border + '40';
+      ctx.lineWidth = 1;
+      roundRect(ctx, sideX, listY, SIDEBAR_W, 24, 6);
+      ctx.stroke();
+      ctx.font = 'bold 10px Arial'; ctx.fillStyle = '#1a2535';
+      ctx.textAlign = 'left';
+      var label = f.label.length > 18 ? f.label.slice(0,16) + '…' : f.label;
+      ctx.fillText(label, sideX + 10, listY + 12);
+      ctx.font = '9px Arial'; ctx.fillStyle = '#64748b';
+      ctx.textAlign = 'right';
+      ctx.fillText((f.width/PPF).toFixed(0) + '×' + (f.height/PPF).toFixed(0) + ' ft', sideX + SIDEBAR_W - 8, listY + 12);
+      listY += 28;
+    });
+
+    // ── Footer ──────────────────────────────────────
+    var footY = HEADER_H + PAD + drawH + PAD;
+    ctx.fillStyle = '#244d74';
+    ctx.fillRect(0, footY, ec.width, FOOTER_H);
+
+    ctx.font = 'bold 13px Arial'; ctx.fillStyle = '#f5861f';
+    ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+    ctx.fillText('PAYBOTIC FINANCIAL', 24, footY + 22);
+    ctx.font = '11px Arial'; ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.fillText('Cannabis-Compliant Payments & Banking', 24, footY + 42);
+
+    ctx.font = '11px Arial'; ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.textAlign = 'right';
+    ctx.fillText('payboticfinancial.com', ec.width - 24, footY + 22);
+    ctx.fillText('Prepared for: ' + email, ec.width - 24, footY + 42);
+
+    // Trigger download
+    var link = document.createElement('a');
+    link.download = 'paybotic-dispensary-layout.png';
+    link.href = ec.toDataURL('image/png');
+    link.click();
+  }
+
+  function roundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
   }
 
   buildLibrary();
