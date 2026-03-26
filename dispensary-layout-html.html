@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Paybotic Dispensary Layout Planner</title>
+<title>Paybotic Financial Dispensary Layout Planner</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f6f9; min-height: 100vh; }
@@ -140,10 +140,10 @@
   .fixture-item.type-door     { border-radius: 3px 12px 12px 3px !important; }
   .f-name { font-size: 9px; font-weight: 700; color: #1a2535; line-height: 1.2; margin-top: 2px; pointer-events: none; }
   .f-size { font-size: 8px; color: #64748b; pointer-events: none; }
-  #props-empty { text-align: center; padding: 30px 10px; }
-  #props-empty .pe-icon { font-size: 36px; margin-bottom: 10px; }
-  #props-empty p { color: #64748b; font-size: 13px; }
-  #props-form { display: none; }
+  #pbc-props-empty { text-align: center; padding: 30px 10px; }
+  #pbc-props-empty .pe-icon { font-size: 36px; margin-bottom: 10px; }
+  #pbc-props-empty p { color: #64748b; font-size: 13px; }
+  #pbc-props-form { display: none; }
   .props-preview {
     padding: 10px; border-radius: 10px; text-align: center;
     margin-bottom: 12px; border: 1.5px solid rgba(0,0,0,0.08);
@@ -166,25 +166,20 @@
     border: 1px solid rgba(245,134,31,0.35); font-size: 12px;
     color: #92400e; margin-top: 12px; display: none;
   }
-  /* ---- SUMMARY CANVAS ---- */
   #summary-canvas-wrap {
-    margin-bottom: 24px;
-    border-radius: 12px;
-    overflow: hidden;
-    border: 1px solid rgba(36,77,116,0.1);
+    margin-bottom: 24px; border-radius: 12px;
+    overflow: hidden; border: 1px solid rgba(36,77,116,0.1);
     background: #fafcff;
   }
   #summary-canvas-label {
-    background: #244d74;
-    color: rgba(255,255,255,0.8);
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    padding: 7px 14px;
+    background: #244d74; color: rgba(255,255,255,0.8);
+    font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+    text-transform: uppercase; padding: 7px 14px; cursor: pointer;
   }
-  #summary-canvas { display: block; width: 100%; }
-  #step-contact .inner { max-width: 540px; }
+  #summary-canvas { display: block; width: 100%; cursor: pointer; }
+  #step-details .inner { max-width: 860px; margin: 28px auto; }
+  #step-contact .inner { max-width: 640px; margin: 28px auto; }
+  #step-done .inner { max-width: 520px; margin: 60px auto; text-align: center; }
   .summary-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 24px; }
   .stat-card { padding: 16px; background: #f4f6f9; border-radius: 12px; text-align: center; }
   .stat-card-icon { font-size: 24px; margin-bottom: 6px; }
@@ -201,16 +196,15 @@
   }
   .step-btns { display: flex; gap: 12px; }
   .step-btns .btn-primary, .step-btns .btn-secondary { flex: 1; }
-  .contact-header { text-align: center; margin-bottom: 24px; }
+  .contact-header { text-align: center; margin-bottom: 20px; }
   .contact-header h2 { font-weight: 800; font-size: 22px; color: #244d74; }
   .contact-header p { color: #64748b; font-size: 14px; margin-top: 6px; }
   .trust-box {
     padding: 12px 14px; background: #f4f6f9; border-radius: 10px;
-    font-size: 12px; color: #64748b; margin: 16px 0; display: flex; gap: 8px;
+    font-size: 12px; color: #64748b; margin-bottom: 16px; display: flex; gap: 8px;
   }
   .perks { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
   .perk { font-size: 13px; color: #1a2535; }
-  #step-done .inner { max-width: 520px; margin: 60px auto; text-align: center; }
   .done-card { padding: 36px; }
   .done-card h2 { font-weight: 800; font-size: 24px; color: #244d74; margin-bottom: 8px; }
   .done-card p { color: #64748b; font-size: 14px; margin-bottom: 24px; }
@@ -263,8 +257,6 @@
   <!-- STEP 1: DESIGN -->
   <div id="step-design" class="step active">
     <div class="grid">
-
-      <!-- LEFT PANEL -->
       <div style="display:flex;flex-direction:column;gap:16px;">
         <div class="card">
           <div class="section-title">📐 Room Dimensions</div>
@@ -277,7 +269,6 @@
             <span id="stat-total-area" style="font-size:13px;font-weight:700;color:#244d74;">1000 sq ft</span>
           </div>
         </div>
-
         <div class="card">
           <div class="section-title">🏪 Fixture Library</div>
           <div class="tabs">
@@ -289,7 +280,6 @@
           <div id="fixture-payment" style="display:none;"></div>
           <div id="fixture-structure" style="display:none;"></div>
         </div>
-
         <div class="card">
           <div class="section-title">📊 Quick Stats</div>
           <div class="stat-row"><span class="stat-label">Total Area</span><span class="stat-val" id="qs-area">1000 sq ft</span></div>
@@ -298,12 +288,10 @@
           <div class="stat-row"><span class="stat-label">Open Floor</span><span class="stat-val" id="qs-open">1000.0 sq ft</span></div>
           <div class="alert-box" id="no-payment-tip">💡 <strong>Tip:</strong> Add an ATM/Kiosk, Checkout, or Payment Terminal to optimize your payment flow!</div>
         </div>
-
         <button class="btn-primary" id="btn-to-review" disabled>Add fixtures to continue →</button>
         <button class="btn-secondary" id="btn-clear" style="width:100%;padding:10px;">Clear Layout</button>
       </div>
 
-      <!-- CANVAS -->
       <div class="card" id="canvas-wrap">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
           <div>
@@ -324,7 +312,6 @@
         </div>
       </div>
 
-      <!-- PROPERTIES -->
       <div class="card">
         <div class="section-title">⚙️ Properties</div>
         <div id="pbc-props-empty">
@@ -365,12 +352,11 @@
             <button class="btn-danger" id="btn-delete">🗑 Delete</button>
           </div>
           <div class="tip-box" id="payment-tip" style="display:none;">
-            <div class="tip-title">💳 PAYBOTIC TIP</div>
+            <div class="tip-title">💳 PAYBOTIC FINANCIAL TIP</div>
             <div class="tip-text" id="payment-tip-text"></div>
           </div>
         </div>
       </div>
-
     </div>
   </div>
 
@@ -394,11 +380,10 @@
           <div id="summary-canvas-label">Your Layout — Click to go back and edit</div>
           <canvas id="summary-canvas" height="320"></canvas>
         </div>
-
         <div style="font-weight:700;color:#244d74;margin-bottom:10px;">Fixture List</div>
         <div id="fixture-list"></div>
         <div class="alert-box" id="details-no-payment" style="margin-bottom:20px;">
-          💡 <strong>Paybotic Recommendation:</strong> Your layout doesn't include a payment terminal or ATM yet. Dispensaries with integrated payment solutions see significantly higher transaction volumes. Ask us about our compliant, cannabis-friendly payment options!
+          💡 <strong>Paybotic Financial Recommendation:</strong> Your layout doesn't include a payment terminal or ATM yet. Dispensaries with integrated payment solutions see significantly higher transaction volumes. Ask us about our compliant, cannabis-friendly payment options!
         </div>
         <div class="step-btns">
           <button class="btn-secondary" id="btn-back-design">← Back to Design</button>
@@ -417,27 +402,24 @@
           <h2>Get Your Free Layout Report</h2>
           <p>A Paybotic Financial specialist will review your layout and recommend the best payment solutions for your dispensary — completely free.</p>
         </div>
-        <label class="field-label">Business Name</label>
-        <input type="text" id="c-business" placeholder="Green Leaf Dispensary" style="margin-bottom:10px;"/>
-        <label class="field-label">Your Name *</label>
-        <input type="text" id="c-name" placeholder="Jane Smith" style="margin-bottom:10px;"/>
-        <label class="field-label">Email Address *</label>
-        <input type="email" id="c-email" placeholder="jane@dispensary.com" style="margin-bottom:10px;"/>
-        <label class="field-label">Phone Number</label>
-        <input type="tel" id="c-phone" placeholder="(555) 000-0000" style="margin-bottom:10px;"/>
         <div class="trust-box">
           <span>🔒</span>
-          <span>Your information is secure. Paybotic only uses your details to provide your free consultation. No spam, ever.</span>
+          <span>Your information is secure. Paybotic Financial only uses your details to provide your free consultation. No spam, ever.</span>
         </div>
         <div class="perks">
           <div class="perk">✅ Personalized payment flow recommendations</div>
           <div class="perk">✅ Compliant ATM &amp; kiosk placement guidance</div>
           <div class="perk">✅ Cannabis-friendly banking solutions overview</div>
-          <div class="perk">✅ Free follow-up with a Paybotic specialist</div>
+          <div class="perk">✅ Free follow-up with a Paybotic Financial specialist</div>
         </div>
-        <div class="step-btns">
+        <iframe
+          aria-label='Paybotic Financial Dispensary Layout Tool'
+          frameborder="0"
+          style="height:500px;width:100%;border:none;margin-top:8px;"
+          src='https://forms.zohopublic.com/Paybotic/form/PayboticFinancialDispensaryLayoutTool/formperma/Uw6X8VmzgGy20P7g2Cuue077tHM6GBWJpRGCepwOSoE'>
+        </iframe>
+        <div style="margin-top:16px;">
           <button class="btn-secondary" id="btn-back-details">← Back</button>
-          <button class="btn-primary" id="btn-submit" style="flex:2;">Send Me My Report →</button>
         </div>
       </div>
     </div>
@@ -457,7 +439,7 @@
           <div class="ds-row"><span class="ds-label">Fixtures</span><span class="ds-val" id="ds-count">—</span></div>
         </div>
         <div class="step-btns">
-          <a href="https://paybotic.com" target="_blank" rel="noopener" class="btn-primary" style="display:block;text-align:center;text-decoration:none;flex:1;">Visit PayboticFinancial.com →</a>
+          <a href="https://payboticfinancial.com" target="_blank" rel="noopener" class="btn-primary" style="display:block;text-align:center;text-decoration:none;flex:1;">Visit PayboticFinancial.com →</a>
           <button class="btn-secondary" id="btn-start-over" style="flex:1;">Start New Layout</button>
         </div>
       </div>
@@ -470,23 +452,23 @@
 (function() {
   var GRID = 20, PPF = 14;
   var FIXTURES = [
-    { type:"display",   label:"Display Case",        width:6,  height:2.5, icon:"🪟", color:"#e8f4fd", border:"#244d74",  payment:false,  structure:false },
-    { type:"shelving",  label:"Gondola Shelving",     width:4,  height:2,   icon:"📦", color:"#f0fdf4", border:"#22c55e",  payment:false,  structure:false },
-    { type:"waiting",   label:"Waiting Area",         width:8,  height:6,   icon:"🪑", color:"#f5f3ff", border:"#8b5cf6",  payment:false,  structure:false },
-    { type:"security",  label:"Security Desk",        width:4,  height:3,   icon:"🛡️", color:"#fff1f2", border:"#f43f5e",  payment:false,  structure:false },
-    { type:"office",    label:"Office",               width:8,  height:8,   icon:"🏢", color:"#f8fafc", border:"#64748b",  payment:false,  structure:false },
-    { type:"storage",   label:"Storage / Vault",      width:10, height:8,   icon:"🔒", color:"#fff7ed", border:"#f97316",  payment:false,  structure:false },
-    { type:"budtender", label:"Budtender Station",    width:4,  height:3,   icon:"🌿", color:"#f0fdf4", border:"#16a34a",  payment:false,  structure:false },
-    { type:"entrance",  label:"Entrance / Reception", width:6,  height:3,   icon:"🚪", color:"#eff6ff", border:"#3b82f6",  payment:false,  structure:false },
-    { type:"camera",    label:"Security Camera Zone", width:3,  height:3,   icon:"📷", color:"#fdf4ff", border:"#a855f7",  payment:false,  structure:false },
-    { type:"checkout",  label:"Checkout Counter",     width:8,  height:3,   icon:"💳", color:"#fff3e8", border:"#f5861f",  payment:true,   structure:false },
-    { type:"atm",       label:"ATM / Kiosk",          width:3,  height:2,   icon:"🏧", color:"#ecfeff", border:"#06b6d4",  payment:true,   structure:false },
-    { type:"payment",   label:"Payment Terminal",     width:2,  height:2,   icon:"📟", color:"#fef9ec", border:"#f5861f",  payment:true,   structure:false },
-    { type:"wall-ext",  label:"Exterior Wall",        width:12, height:1,   icon:"🧱", color:"#4b5563", border:"#1f2937",  payment:false,  structure:true  },
-    { type:"wall-int",  label:"Interior Wall",        width:8,  height:0.5, icon:"▬",  color:"#9ca3af", border:"#6b7280",  payment:false,  structure:true  },
-    { type:"door",      label:"Door",                 width:3,  height:1,   icon:"🚪", color:"#fef9c3", border:"#ca8a04",  payment:false,  structure:true  },
-    { type:"window",    label:"Window",               width:4,  height:0.5, icon:"🪟", color:"#e0f2fe", border:"#0284c7",  payment:false,  structure:true  },
-    { type:"restroom",  label:"Restroom",             width:6,  height:6,   icon:"🚻", color:"#f0fdf4", border:"#16a34a",  payment:false,  structure:true  }
+    { type:"display",   label:"Display Case",        width:6,  height:2.5, icon:"🪟", color:"#e8f4fd", border:"#244d74",  payment:false, structure:false },
+    { type:"shelving",  label:"Gondola Shelving",     width:4,  height:2,   icon:"📦", color:"#f0fdf4", border:"#22c55e",  payment:false, structure:false },
+    { type:"waiting",   label:"Waiting Area",         width:8,  height:6,   icon:"🪑", color:"#f5f3ff", border:"#8b5cf6",  payment:false, structure:false },
+    { type:"security",  label:"Security Desk",        width:4,  height:3,   icon:"🛡️", color:"#fff1f2", border:"#f43f5e",  payment:false, structure:false },
+    { type:"office",    label:"Office",               width:8,  height:8,   icon:"🏢", color:"#f8fafc", border:"#64748b",  payment:false, structure:false },
+    { type:"storage",   label:"Storage / Vault",      width:10, height:8,   icon:"🔒", color:"#fff7ed", border:"#f97316",  payment:false, structure:false },
+    { type:"budtender", label:"Budtender Station",    width:4,  height:3,   icon:"🌿", color:"#f0fdf4", border:"#16a34a",  payment:false, structure:false },
+    { type:"entrance",  label:"Entrance / Reception", width:6,  height:3,   icon:"🚪", color:"#eff6ff", border:"#3b82f6",  payment:false, structure:false },
+    { type:"camera",    label:"Security Camera Zone", width:3,  height:3,   icon:"📷", color:"#fdf4ff", border:"#a855f7",  payment:false, structure:false },
+    { type:"checkout",  label:"Checkout Counter",     width:8,  height:3,   icon:"💳", color:"#fff3e8", border:"#f5861f",  payment:true,  structure:false },
+    { type:"atm",       label:"ATM / Kiosk",          width:3,  height:2,   icon:"🏧", color:"#ecfeff", border:"#06b6d4",  payment:true,  structure:false },
+    { type:"payment",   label:"Payment Terminal",     width:2,  height:2,   icon:"📟", color:"#fef9ec", border:"#f5861f",  payment:true,  structure:false },
+    { type:"wall-ext",  label:"Exterior Wall",        width:12, height:1,   icon:"🧱", color:"#4b5563", border:"#1f2937",  payment:false, structure:true  },
+    { type:"wall-int",  label:"Interior Wall",        width:8,  height:0.5, icon:"▬",  color:"#9ca3af", border:"#6b7280",  payment:false, structure:true  },
+    { type:"door",      label:"Door",                 width:3,  height:1,   icon:"🚪", color:"#fef9c3", border:"#ca8a04",  payment:false, structure:true  },
+    { type:"window",    label:"Window",               width:4,  height:0.5, icon:"🪟", color:"#e0f2fe", border:"#0284c7",  payment:false, structure:true  },
+    { type:"restroom",  label:"Restroom",             width:6,  height:6,   icon:"🚻", color:"#f0fdf4", border:"#16a34a",  payment:false, structure:true  }
   ];
   var TIPS = {
     atm:      "Our ATMs are compliant, branded, and fully serviced for cannabis dispensaries.",
@@ -501,7 +483,6 @@
   function snap(v) { return Math.round(v / GRID) * GRID; }
   function $(id) { return document.getElementById(id); }
 
-  /* ---- BUILD LIBRARY ---- */
   function buildLibrary() {
     ['store','payment','structure'].forEach(function(tab) {
       var el = $('fixture-' + tab);
@@ -526,7 +507,6 @@
     });
   }
 
-  /* ---- TABS ---- */
   function switchTab(active) {
     ['store','payment','structure'].forEach(function(t) {
       $('tab-' + t).classList.toggle('active', t === active);
@@ -537,7 +517,6 @@
   $('tab-payment').addEventListener('click',   function(){ switchTab('payment'); });
   $('tab-structure').addEventListener('click', function(){ switchTab('structure'); });
 
-  /* ---- FIXTURE LIBRARY CLICK (delegation) ---- */
   document.addEventListener('click', function(e) {
     var btn = e.target.closest('.fixture-btn');
     if (!btn) return;
@@ -546,7 +525,6 @@
     if (item) addFixture(item);
   });
 
-  /* ---- ROOM INPUTS ---- */
   $('roomW').addEventListener('input', updateRoom);
   $('roomH').addEventListener('input', updateRoom);
 
@@ -562,7 +540,6 @@
     updateStats();
   }
 
-  /* ---- ADD FIXTURE ---- */
   function addFixture(item) {
     var w = item.width * PPF, h = item.height * PPF;
     var f = {
@@ -579,7 +556,6 @@
     $('canvas-empty').style.display = 'none';
   }
 
-  /* ---- RENDER FIXTURE ---- */
   function renderFixture(f) {
     var el = $('f-' + f.id);
     if (!el) {
@@ -588,20 +564,20 @@
       el.className = 'fixture-item type-' + f.type;
       $('room-canvas').appendChild(el);
     }
-    el.style.left      = f.x + 'px';
-    el.style.top       = f.y + 'px';
-    el.style.width     = f.width + 'px';
-    el.style.height    = f.height + 'px';
-    el.style.background = f.color;
-    el.style.border    = '1.5px solid ' + f.border + '80';
-    el.style.transform = 'rotate(' + f.rotation + 'deg)';
+    el.style.left            = f.x + 'px';
+    el.style.top             = f.y + 'px';
+    el.style.width           = f.width + 'px';
+    el.style.height          = f.height + 'px';
+    el.style.background      = f.color;
+    el.style.border          = '1.5px solid ' + f.border + '80';
+    el.style.transform       = 'rotate(' + f.rotation + 'deg)';
     el.style.transformOrigin = 'center center';
-    el.style.position  = 'absolute';
-    el.style.borderRadius = '8px';
-    el.style.cursor    = 'grab';
-    el.style.padding   = '4px';
-    el.style.overflow  = 'hidden';
-    el.style.userSelect = 'none';
+    el.style.position        = 'absolute';
+    el.style.borderRadius    = '8px';
+    el.style.cursor          = 'grab';
+    el.style.padding         = '4px';
+    el.style.overflow        = 'hidden';
+    el.style.userSelect      = 'none';
     el.dataset.fid = f.id;
     el.innerHTML =
       '<div class="f-icon">' + f.icon + '</div>' +
@@ -611,17 +587,13 @@
     else el.classList.remove('selected');
   }
 
-  /* ---- CANVAS MOUSE EVENTS (delegation) ---- */
   var canvas = $('room-canvas');
 
   canvas.addEventListener('mousedown', function(e) {
     var el = e.target.closest('.fixture-item');
-    console.log('canvas mousedown, target:', e.target, 'fixture el:', el);
     if (el) {
-      e.preventDefault();
-      e.stopPropagation();
+      e.preventDefault(); e.stopPropagation();
       var fid = el.dataset.fid;
-      console.log('selecting fixture id:', fid);
       selectFixture(fid);
       dragging = fid;
       var f = fixtures.find(function(x){ return x.id === fid; });
@@ -635,18 +607,11 @@
 
   canvas.addEventListener('click', function(e) {
     var el = e.target.closest('.fixture-item');
-    console.log('canvas click, fixture el:', el);
-    if (el) {
-      e.stopPropagation();
-      selectFixture(el.dataset.fid);
-    }
+    if (el) { e.stopPropagation(); selectFixture(el.dataset.fid); }
   });
 
   document.addEventListener('mouseup', function() {
-    if (dragging) {
-      var el = $('f-' + dragging);
-      if (el) el.style.cursor = 'grab';
-    }
+    if (dragging) { var el = $('f-' + dragging); if (el) el.style.cursor = 'grab'; }
     dragging = null;
   });
 
@@ -662,16 +627,10 @@
   });
 
   canvas.addEventListener('mouseleave', function() {
-    if (dragging) {
-      var el = $('f-' + dragging);
-      if (el) el.style.cursor = 'grab';
-      dragging = null;
-    }
+    if (dragging) { var el = $('f-' + dragging); if (el) el.style.cursor = 'grab'; dragging = null; }
   });
 
-  /* ---- SELECT FIXTURE ---- */
   function selectFixture(id) {
-    console.log('selectFixture called with id:', id, '| fixtures count:', fixtures.length);
     selectedId = id;
     fixtures.forEach(function(f) {
       var el = $('f-' + f.id);
@@ -680,7 +639,6 @@
     var f = id ? fixtures.find(function(x){ return x.id === id; }) : null;
     var emptyEl = $('pbc-props-empty');
     var formEl  = $('pbc-props-form');
-    console.log('props-empty el:', emptyEl, '| props-form el:', formEl);
     if (!f) {
       if (emptyEl) emptyEl.style.display = '';
       if (formEl)  formEl.style.display  = 'none';
@@ -691,7 +649,6 @@
     $('pp-icon').textContent = f.icon;
     $('pp-label').textContent = f.label;
     $('props-preview').style.background = f.color;
-    $('prop-label').value = (f.width / PPF).toFixed(1); // reset then assign properly
     $('prop-label').value = f.label;
     $('prop-w').value = (f.width / PPF).toFixed(1);
     $('prop-h').value = (f.height / PPF).toFixed(1);
@@ -704,43 +661,34 @@
     else { $('payment-tip').style.display = 'none'; }
   }
 
-  /* ---- PROPERTY INPUTS ---- */
   $('prop-label').addEventListener('input', function() {
     if (!selectedId) return;
-    var f = fixtures.find(function(x){ return x.id === selectedId; });
-    if (!f) return;
-    f.label = this.value;
-    $('pp-label').textContent = this.value;
-    renderFixture(f);
+    var f = fixtures.find(function(x){ return x.id === selectedId; }); if (!f) return;
+    f.label = this.value; $('pp-label').textContent = this.value; renderFixture(f);
   });
   $('prop-w').addEventListener('input', function() {
     if (!selectedId) return;
-    var f = fixtures.find(function(x){ return x.id === selectedId; });
-    if (!f) return;
+    var f = fixtures.find(function(x){ return x.id === selectedId; }); if (!f) return;
     f.width = Math.min(roomW * PPF, Math.max(PPF, parseFloat(this.value || 1) * PPF));
     renderFixture(f); updateStats();
   });
   $('prop-h').addEventListener('input', function() {
     if (!selectedId) return;
-    var f = fixtures.find(function(x){ return x.id === selectedId; });
-    if (!f) return;
+    var f = fixtures.find(function(x){ return x.id === selectedId; }); if (!f) return;
     f.height = Math.min(roomH * PPF, Math.max(PPF, parseFloat(this.value || 1) * PPF));
     renderFixture(f); updateStats();
   });
   $('prop-rot').addEventListener('input', function() {
     if (!selectedId) return;
-    var f = fixtures.find(function(x){ return x.id === selectedId; });
-    if (!f) return;
+    var f = fixtures.find(function(x){ return x.id === selectedId; }); if (!f) return;
     f.rotation = parseInt(this.value);
     $('rot-val').textContent = f.rotation + '°';
     renderFixture(f);
   });
 
-  /* ---- PROPERTY BUTTONS ---- */
   $('btn-rotate').addEventListener('click', function() {
     if (!selectedId) return;
-    var f = fixtures.find(function(x){ return x.id === selectedId; });
-    if (!f) return;
+    var f = fixtures.find(function(x){ return x.id === selectedId; }); if (!f) return;
     f.rotation = (f.rotation + 90) % 360;
     $('prop-rot').value = f.rotation;
     $('rot-val').textContent = f.rotation + '°';
@@ -748,22 +696,17 @@
   });
   $('btn-duplicate').addEventListener('click', function() {
     if (!selectedId) return;
-    var f = fixtures.find(function(x){ return x.id === selectedId; });
-    if (!f) return;
+    var f = fixtures.find(function(x){ return x.id === selectedId; }); if (!f) return;
     var copy = Object.assign({}, f, {
       id: uid(), label: f.label + ' Copy',
       x: Math.min(f.x + GRID, roomW * PPF - f.width),
       y: Math.min(f.y + GRID, roomH * PPF - f.height)
     });
-    fixtures.push(copy);
-    renderFixture(copy);
-    selectFixture(copy.id);
-    updateStats();
+    fixtures.push(copy); renderFixture(copy); selectFixture(copy.id); updateStats();
   });
   $('btn-delete').addEventListener('click', function() {
     if (!selectedId) return;
-    var el = $('f-' + selectedId);
-    if (el) el.remove();
+    var el = $('f-' + selectedId); if (el) el.remove();
     fixtures = fixtures.filter(function(f){ return f.id !== selectedId; });
     selectedId = null;
     $('pbc-props-empty').style.display = '';
@@ -772,7 +715,6 @@
     if (fixtures.length === 0) $('canvas-empty').style.display = '';
   });
 
-  /* ---- CLEAR ---- */
   $('btn-clear').addEventListener('click', function() {
     fixtures.forEach(function(f){ var el = $('f-'+f.id); if(el) el.remove(); });
     fixtures = []; selectedId = null;
@@ -782,7 +724,6 @@
     updateStats();
   });
 
-  /* ---- STATS ---- */
   function updateStats() {
     var total = roomW * roomH;
     var fp = fixtures.reduce(function(s,f){ return s + (f.width/PPF)*(f.height/PPF); }, 0);
@@ -799,10 +740,9 @@
     btn.textContent = fixtures.length === 0 ? 'Add fixtures to continue →' : 'Review My Layout →';
   }
 
-  /* ---- STEP NAVIGATION ---- */
   function goToStep(step) {
     document.querySelectorAll('.step').forEach(function(s){ s.classList.remove('active'); });
-    $(('step-' + step)).classList.add('active');
+    $('step-' + step).classList.add('active');
     var map = { design:1, details:2, contact:3, done:4 };
     var cur = map[step] || 1;
     [1,2,3].forEach(function(i) {
@@ -818,17 +758,15 @@
   $('btn-back-design').addEventListener('click',  function(){ goToStep('design'); });
   $('btn-to-contact').addEventListener('click',   function(){ goToStep('contact'); });
   $('btn-back-details').addEventListener('click', function(){ goToStep('details'); });
-  $('btn-submit').addEventListener('click', submitLead);
   $('btn-start-over').addEventListener('click', function() {
     fixtures.forEach(function(f){ var el=$('f-'+f.id); if(el) el.remove(); });
     fixtures=[]; selectedId=null;
-    $('props-empty').style.display=''; $('props-form').style.display='none';
+    $('pbc-props-empty').style.display='';
+    $('pbc-props-form').style.display='none';
     $('canvas-empty').style.display='';
-    ['c-name','c-email','c-phone','c-business'].forEach(function(id){ $(id).value=''; });
     updateStats(); goToStep('design');
   });
 
-  /* ---- DETAILS SUMMARY ---- */
   function buildSummary() {
     var total = roomW * roomH;
     var fp = fixtures.reduce(function(s,f){ return s + (f.width/PPF)*(f.height/PPF); }, 0);
@@ -837,7 +775,6 @@
     $('sum-count').textContent = fixtures.length;
     $('sum-open').textContent  = Math.max(0, total - fp).toFixed(0) + ' sq ft';
 
-    /* ---- DRAW MINI FLOOR PLAN ---- */
     var sc = $('summary-canvas');
     var wrap = $('summary-canvas-wrap');
     var cw = wrap.offsetWidth || 800;
@@ -851,108 +788,65 @@
     sc.height = drawH + offY + 40;
     var ctx = sc.getContext('2d');
     ctx.clearRect(0, 0, sc.width, sc.height);
-
-    // Floor
     ctx.fillStyle = '#fafcff';
     ctx.fillRect(offX, offY, drawW, drawH);
-
-    // Grid
-    ctx.strokeStyle = 'rgba(36,77,116,0.07)';
-    ctx.lineWidth = 0.5;
+    ctx.strokeStyle = 'rgba(36,77,116,0.07)'; ctx.lineWidth = 0.5;
     var gridStep = PPF * scale;
-    for(var gx = 0; gx <= drawW; gx += gridStep){
-      ctx.beginPath(); ctx.moveTo(offX+gx, offY); ctx.lineTo(offX+gx, offY+drawH); ctx.stroke();
+    for(var gx=0; gx<=drawW; gx+=gridStep){
+      ctx.beginPath(); ctx.moveTo(offX+gx,offY); ctx.lineTo(offX+gx,offY+drawH); ctx.stroke();
     }
-    for(var gy = 0; gy <= drawH; gy += gridStep){
-      ctx.beginPath(); ctx.moveTo(offX, offY+gy); ctx.lineTo(offX+drawW, offY+gy); ctx.stroke();
+    for(var gy=0; gy<=drawH; gy+=gridStep){
+      ctx.beginPath(); ctx.moveTo(offX,offY+gy); ctx.lineTo(offX+drawW,offY+gy); ctx.stroke();
     }
-
-    // Fixtures
     fixtures.forEach(function(f) {
-      var fx = offX + f.x * scale;
-      var fy = offY + f.y * scale;
-      var fw = f.width * scale;
-      var fh = f.height * scale;
+      var fx=offX+f.x*scale, fy=offY+f.y*scale, fw=f.width*scale, fh=f.height*scale;
       ctx.save();
-      ctx.translate(fx + fw/2, fy + fh/2);
-      ctx.rotate((f.rotation || 0) * Math.PI / 180);
-      ctx.fillStyle = f.color;
-      ctx.strokeStyle = f.border || '#94a3b8';
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.roundRect(-fw/2, -fh/2, fw, fh, 4);
-      ctx.fill(); ctx.stroke();
-      // Label
-      var fontSize = Math.max(8, Math.min(11, fw / (f.label.length * 0.6)));
-      ctx.font = 'bold ' + fontSize + 'px K2D,Arial';
-      ctx.fillStyle = '#1a2535';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(f.label, 0, -3);
-      ctx.font = (fontSize - 1) + 'px K2D,Arial';
-      ctx.fillStyle = '#64748b';
-      ctx.fillText((f.width/PPF).toFixed(0) + '×' + (f.height/PPF).toFixed(0) + 'ft', 0, fontSize);
+      ctx.translate(fx+fw/2, fy+fh/2);
+      ctx.rotate((f.rotation||0)*Math.PI/180);
+      ctx.fillStyle=f.color; ctx.strokeStyle=f.border||'#94a3b8'; ctx.lineWidth=1.5;
+      ctx.beginPath(); ctx.roundRect(-fw/2,-fh/2,fw,fh,4); ctx.fill(); ctx.stroke();
+      var fontSize=Math.max(8,Math.min(11,fw/(f.label.length*0.6)));
+      ctx.font='bold '+fontSize+'px K2D,Arial'; ctx.fillStyle='#1a2535';
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(f.label,0,-3);
+      ctx.font=(fontSize-1)+'px K2D,Arial'; ctx.fillStyle='#64748b';
+      ctx.fillText((f.width/PPF).toFixed(0)+'×'+(f.height/PPF).toFixed(0)+'ft',0,fontSize);
       ctx.restore();
     });
-
-    // Room border
-    ctx.strokeStyle = '#244d74';
-    ctx.lineWidth = 2.5;
-    ctx.beginPath();
-    ctx.rect(offX, offY, drawW, drawH);
-    ctx.stroke();
-
-    // Scale bar
-    var barFt = 10, barPx = barFt * PPF * scale;
-    var bx = offX + 10, by = offY + drawH - 14;
-    ctx.strokeStyle = '#244d74'; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.moveTo(bx, by); ctx.lineTo(bx + barPx, by); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(bx, by-4); ctx.lineTo(bx, by+4); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(bx+barPx, by-4); ctx.lineTo(bx+barPx, by+4); ctx.stroke();
-    ctx.font = '9px K2D,Arial'; ctx.fillStyle = '#244d74';
-    ctx.textAlign = 'center'; ctx.fillText('10 ft', bx + barPx/2, by - 5);
-
-    // Empty state
-    if(fixtures.length === 0){
-      ctx.font = '13px K2D,Arial'; ctx.fillStyle = '#94a3b8';
-      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.fillText('No fixtures placed', offX + drawW/2, offY + drawH/2);
+    ctx.strokeStyle='#244d74'; ctx.lineWidth=2.5;
+    ctx.beginPath(); ctx.rect(offX,offY,drawW,drawH); ctx.stroke();
+    var barFt=10, barPx=barFt*PPF*scale, bx=offX+10, by=offY+drawH-14;
+    ctx.strokeStyle='#244d74'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(bx,by); ctx.lineTo(bx+barPx,by); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(bx,by-4); ctx.lineTo(bx,by+4); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(bx+barPx,by-4); ctx.lineTo(bx+barPx,by+4); ctx.stroke();
+    ctx.font='9px K2D,Arial'; ctx.fillStyle='#244d74';
+    ctx.textAlign='center'; ctx.fillText('10 ft',bx+barPx/2,by-5);
+    if(fixtures.length===0){
+      ctx.font='13px K2D,Arial'; ctx.fillStyle='#94a3b8';
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText('No fixtures placed',offX+drawW/2,offY+drawH/2);
     }
+    sc.onclick=function(){ goToStep('design'); };
+    sc.style.cursor='pointer';
 
-    // Click to edit
-    sc.onclick = function(){ goToStep('design'); };
-    sc.style.cursor = 'pointer';
-    /* ---- END FLOOR PLAN ---- */
-    var list = $('fixture-list');
-    list.innerHTML = '';
-    fixtures.forEach(function(f) {
-      var isPay = ['atm','payment','checkout'].indexOf(f.type) > -1;
-      var div = document.createElement('div');
-      div.className = 'fixture-list-item';
-      div.style.background = f.color;
-      div.innerHTML =
-        '<span style="font-size:20px">' + f.icon + '</span>' +
-        '<div><div style="font-weight:600;font-size:13px;color:#1a2535">' + f.label + '</div>' +
-        '<div style="font-size:11px;color:#64748b">' + (f.width/PPF).toFixed(1) + ' × ' + (f.height/PPF).toFixed(1) + ' ft</div></div>' +
-        (isPay ? '<span class="fli-badge">💳 Payment</span>' : '');
+    var list=$('fixture-list'); list.innerHTML='';
+    fixtures.forEach(function(f){
+      var isPay=['atm','payment','checkout'].indexOf(f.type)>-1;
+      var div=document.createElement('div');
+      div.className='fixture-list-item'; div.style.background=f.color;
+      div.innerHTML='<span style="font-size:20px">'+f.icon+'</span>'+
+        '<div><div style="font-weight:600;font-size:13px;color:#1a2535">'+f.label+'</div>'+
+        '<div style="font-size:11px;color:#64748b">'+(f.width/PPF).toFixed(1)+' × '+(f.height/PPF).toFixed(1)+' ft</div></div>'+
+        (isPay?'<span class="fli-badge">💳 Payment</span>':'');
       list.appendChild(div);
     });
-    var hasPay = fixtures.some(function(f){ return ['atm','payment','checkout'].indexOf(f.type) > -1; });
-    $('details-no-payment').style.display = hasPay ? 'none' : '';
+    var hasPay=fixtures.some(function(f){ return ['atm','payment','checkout'].indexOf(f.type)>-1; });
+    $('details-no-payment').style.display=hasPay?'none':'';
   }
 
-  /* ---- SUBMIT ---- */
-  function submitLead() {
-    $('ds-size').textContent  = roomW + ' × ' + roomH + ' ft';
-    $('ds-area').textContent  = (roomW * roomH) + ' sq ft';
-    $('ds-count').textContent = fixtures.length;
-    goToStep('done');
-  }
-
-  /* ---- INIT ---- */
   buildLibrary();
   updateRoom();
-
 })();
 </script>
 </body>
