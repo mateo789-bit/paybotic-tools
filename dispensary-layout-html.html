@@ -166,7 +166,24 @@
     border: 1px solid rgba(245,134,31,0.35); font-size: 12px;
     color: #92400e; margin-top: 12px; display: none;
   }
-  #step-details .inner, #step-contact .inner { max-width: 860px; margin: 28px auto; }
+  /* ---- SUMMARY CANVAS ---- */
+  #summary-canvas-wrap {
+    margin-bottom: 24px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(36,77,116,0.1);
+    background: #fafcff;
+  }
+  #summary-canvas-label {
+    background: #244d74;
+    color: rgba(255,255,255,0.8);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 7px 14px;
+  }
+  #summary-canvas { display: block; width: 100%; }
   #step-contact .inner { max-width: 540px; }
   .summary-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 24px; }
   .stat-card { padding: 16px; background: #f4f6f9; border-radius: 12px; text-align: center; }
@@ -372,6 +389,12 @@
           <div class="stat-card"><div class="stat-card-icon">📦</div><div class="stat-card-val" id="sum-count">—</div><div class="stat-card-label">Fixtures</div></div>
           <div class="stat-card"><div class="stat-card-icon">🚶</div><div class="stat-card-val" id="sum-open">—</div><div class="stat-card-label">Open Floor</div></div>
         </div>
+        <div style="font-weight:700;color:#244d74;margin-bottom:10px;">Your Floor Plan</div>
+        <div id="summary-canvas-wrap">
+          <div id="summary-canvas-label">Your Layout — Click to go back and edit</div>
+          <canvas id="summary-canvas" height="320"></canvas>
+        </div>
+
         <div style="font-weight:700;color:#244d74;margin-bottom:10px;">Fixture List</div>
         <div id="fixture-list"></div>
         <div class="alert-box" id="details-no-payment" style="margin-bottom:20px;">
@@ -814,6 +837,93 @@
     $('sum-area').textContent  = total + ' sq ft';
     $('sum-count').textContent = fixtures.length;
     $('sum-open').textContent  = Math.max(0, total - fp).toFixed(0) + ' sq ft';
+
+    /* ---- DRAW MINI FLOOR PLAN ---- */
+    var sc = $('summary-canvas');
+    var wrap = $('summary-canvas-wrap');
+    var cw = wrap.offsetWidth || 800;
+    sc.width = cw;
+    var roomWpx = roomW * PPF, roomHpx = roomH * PPF;
+    var scaleX = (cw - 40) / roomWpx;
+    var scaleY = 320 / roomHpx;
+    var scale = Math.min(scaleX, scaleY, 1.4);
+    var drawW = roomWpx * scale, drawH = roomHpx * scale;
+    var offX = (cw - drawW) / 2, offY = (320 - drawH) / 2;
+    sc.height = drawH + offY * 2;
+    var ctx = sc.getContext('2d');
+    ctx.clearRect(0, 0, sc.width, sc.height);
+
+    // Floor
+    ctx.fillStyle = '#fafcff';
+    ctx.fillRect(offX, offY, drawW, drawH);
+
+    // Grid
+    ctx.strokeStyle = 'rgba(36,77,116,0.07)';
+    ctx.lineWidth = 0.5;
+    var gridStep = PPF * scale;
+    for(var gx = 0; gx <= drawW; gx += gridStep){
+      ctx.beginPath(); ctx.moveTo(offX+gx, offY); ctx.lineTo(offX+gx, offY+drawH); ctx.stroke();
+    }
+    for(var gy = 0; gy <= drawH; gy += gridStep){
+      ctx.beginPath(); ctx.moveTo(offX, offY+gy); ctx.lineTo(offX+drawW, offY+gy); ctx.stroke();
+    }
+
+    // Fixtures
+    fixtures.forEach(function(f) {
+      var fx = offX + f.x * scale;
+      var fy = offY + f.y * scale;
+      var fw = f.width * scale;
+      var fh = f.height * scale;
+      ctx.save();
+      ctx.translate(fx + fw/2, fy + fh/2);
+      ctx.rotate((f.rotation || 0) * Math.PI / 180);
+      ctx.fillStyle = f.color;
+      ctx.strokeStyle = f.border || '#94a3b8';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.roundRect(-fw/2, -fh/2, fw, fh, 4);
+      ctx.fill(); ctx.stroke();
+      // Label
+      var fontSize = Math.max(8, Math.min(11, fw / (f.label.length * 0.6)));
+      ctx.font = 'bold ' + fontSize + 'px K2D,Arial';
+      ctx.fillStyle = '#1a2535';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(f.label, 0, -3);
+      ctx.font = (fontSize - 1) + 'px K2D,Arial';
+      ctx.fillStyle = '#64748b';
+      ctx.fillText((f.width/PPF).toFixed(0) + '×' + (f.height/PPF).toFixed(0) + 'ft', 0, fontSize);
+      ctx.restore();
+    });
+
+    // Room border
+    ctx.strokeStyle = '#244d74';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.rect(offX, offY, drawW, drawH);
+    ctx.stroke();
+
+    // Scale bar
+    var barFt = 10, barPx = barFt * PPF * scale;
+    var bx = offX + 10, by = offY + drawH - 14;
+    ctx.strokeStyle = '#244d74'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(bx, by); ctx.lineTo(bx + barPx, by); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(bx, by-4); ctx.lineTo(bx, by+4); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(bx+barPx, by-4); ctx.lineTo(bx+barPx, by+4); ctx.stroke();
+    ctx.font = '9px K2D,Arial'; ctx.fillStyle = '#244d74';
+    ctx.textAlign = 'center'; ctx.fillText('10 ft', bx + barPx/2, by - 5);
+
+    // Empty state
+    if(fixtures.length === 0){
+      ctx.font = '13px K2D,Arial'; ctx.fillStyle = '#94a3b8';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('No fixtures placed', offX + drawW/2, offY + drawH/2);
+    }
+
+    // Click to edit
+    sc.onclick = function(){ goToStep('design'); };
+    sc.style.cursor = 'pointer';
+    /* ---- END FLOOR PLAN ---- */
     var list = $('fixture-list');
     list.innerHTML = '';
     fixtures.forEach(function(f) {
