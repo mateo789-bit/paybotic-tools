@@ -395,23 +395,23 @@ input[type=range] { width: 100%; accent-color: #244d74; margin-top: 6px; }
 (function() {
   var GRID = 20, PPF = 14;
   var FIXTURES = [
-    { type:"display",   label:"Display Case",        width:6,  height:2.5, icon:"🪟", color:"#e8f4fd", border:"#244d74", payment:false, structure:false },
-    { type:"shelving",  label:"Gondola Shelving",     width:4,  height:2,   icon:"📦", color:"#f0fdf4", border:"#22c55e", payment:false, structure:false },
-    { type:"waiting",   label:"Waiting Area",         width:8,  height:6,   icon:"🪑", color:"#f5f3ff", border:"#8b5cf6", payment:false, structure:false },
-    { type:"security",  label:"Security Desk",        width:4,  height:3,   icon:"🛡️", color:"#fff1f2", border:"#f43f5e", payment:false, structure:false },
-    { type:"office",    label:"Office",               width:8,  height:8,   icon:"🏢", color:"#f8fafc", border:"#64748b", payment:false, structure:false },
-    { type:"storage",   label:"Storage / Vault",      width:10, height:8,   icon:"🔒", color:"#fff7ed", border:"#f97316", payment:false, structure:false },
-    { type:"budtender", label:"Budtender Station",    width:4,  height:3,   icon:"🌿", color:"#f0fdf4", border:"#16a34a", payment:false, structure:false },
-    { type:"entrance",  label:"Entrance / Reception", width:6,  height:3,   icon:"🚪", color:"#eff6ff", border:"#3b82f6", payment:false, structure:false },
-    { type:"camera",    label:"Security Camera Zone", width:3,  height:3,   icon:"📷", color:"#fdf4ff", border:"#a855f7", payment:false, structure:false },
-    { type:"checkout",  label:"Checkout Counter",     width:8,  height:3,   icon:"💵", color:"#fff3e8", border:"#f5861f", payment:true,  structure:false },
-    { type:"atm",       label:"ATM / Kiosk",          width:3,  height:2,   icon:"🏧", color:"#ecfeff", border:"#06b6d4", payment:true,  structure:false },
-    { type:"payment",   label:"Payment Terminal",     width:2,  height:2,   icon:"💵", color:"#fef9ec", border:"#f5861f", payment:true,  structure:false },
-    { type:"wall-ext",  label:"Exterior Wall",        width:12, height:1,   icon:"🧱", color:"#4b5563", border:"#1f2937", payment:false, structure:true },
-    { type:"wall-int",  label:"Interior Wall",        width:8,  height:0.5, icon:"▬",  color:"#9ca3af", border:"#6b7280", payment:false, structure:true },
-    { type:"door",      label:"Door",                 width:3,  height:1,   icon:"🚪", color:"#fef9c3", border:"#ca8a04", payment:false, structure:true },
-    { type:"window",    label:"Window",               width:4,  height:0.5, icon:"🪟", color:"#e0f2fe", border:"#0284c7", payment:false, structure:true },
-    { type:"restroom",  label:"Restroom",             width:6,  height:6,   icon:"🚻", color:"#f0fdf4", border:"#16a34a", payment:false, structure:true }
+    { type:"display",   label:"Display Case",        width:6,   height:2,   icon:"🪟", color:"#e8f4fd", border:"#244d74", payment:false, structure:false },
+    { type:"shelving",  label:"Shelving",             width:8,   height:2,   icon:"📦", color:"#f0fdf4", border:"#22c55e", payment:false, structure:false },
+    { type:"waiting",   label:"Check-In Area",        width:20,  height:12,  icon:"🪑", color:"#f5f3ff", border:"#8b5cf6", payment:false, structure:false },
+    { type:"security",  label:"Security Desk",        width:6,   height:3,   icon:"🛡️", color:"#fff1f2", border:"#f43f5e", payment:false, structure:false },
+    { type:"office",    label:"Office",               width:12,  height:10,  icon:"🏢", color:"#f8fafc", border:"#64748b", payment:false, structure:false },
+    { type:"storage",   label:"Storage / Vault",      width:10,  height:8,   icon:"🔒", color:"#fff7ed", border:"#f97316", payment:false, structure:false },
+    { type:"budtender", label:"Budtender Station",    width:8,   height:3,   icon:"🌿", color:"#f0fdf4", border:"#16a34a", payment:false, structure:false },
+    { type:"entrance",  label:"Entrance",             width:3.5, height:1,   icon:"🚪", color:"#eff6ff", border:"#3b82f6", payment:false, structure:false },
+    { type:"camera",    label:"Security Camera Zone", width:4,   height:4,   icon:"📷", color:"#fdf4ff", border:"#a855f7", payment:false, structure:false },
+    { type:"checkout",  label:"Checkout Counter",     width:10,  height:3,   icon:"💵", color:"#fff3e8", border:"#f5861f", payment:true,  structure:false },
+    { type:"atm",       label:"ATM / Kiosk",          width:2.5, height:2,   icon:"🏧", color:"#ecfeff", border:"#06b6d4", payment:true,  structure:false },
+    { type:"payment",   label:"Payment Terminal",     width:1.5, height:1.5, icon:"💵", color:"#fef9ec", border:"#f5861f", payment:true,  structure:false },
+    { type:"wall-ext",  label:"Exterior Wall",        width:12,  height:1,   icon:"🧱", color:"#4b5563", border:"#1f2937", payment:false, structure:true },
+    { type:"wall-int",  label:"Interior Wall",        width:8,   height:0.5, icon:"▬",  color:"#9ca3af", border:"#6b7280", payment:false, structure:true },
+    { type:"door",      label:"Door",                 width:3.5, height:1,   icon:"🚪", color:"#fef9c3", border:"#ca8a04", payment:false, structure:true },
+    { type:"window",    label:"Window",               width:4,   height:0.5, icon:"🪟", color:"#e0f2fe", border:"#0284c7", payment:false, structure:true },
+    { type:"restroom",  label:"Restroom",             width:8,   height:6,   icon:"🚻", color:"#f0fdf4", border:"#16a34a", payment:false, structure:true }
   ];
   var TIPS = {
     atm:      "Our ATMs are compliant, branded, and fully serviced for cannabis dispensaries.",
@@ -530,7 +530,6 @@ input[type=range] { width: 100%; accent-color: #244d74; margin-top: 6px; }
     el.style.userSelect      = 'none';
     el.dataset.fid = f.id;
     el.innerHTML =
-      '<div class="f-icon">' + f.icon + '</div>' +
       '<div class="f-name">' + f.label + '</div>' +
       '<div class="f-size">' + (f.width/PPF).toFixed(0) + '×' + (f.height/PPF).toFixed(0) + 'ft</div>';
     if (selectedId === f.id) el.classList.add('selected');
