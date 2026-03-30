@@ -648,7 +648,9 @@ input[type=range] { width: 100%; accent-color: #244d74; margin-top: 6px; }
     if (!selectedId) return;
     var f = fixtures.find(function(x) { return x.id === selectedId; });
     if (!f) return;
-    f.width = Math.min(roomW * PPF, Math.max(PPF, parseFloat(this.value || 1) * PPF));
+    var ft = parseFloat(this.value || 1);
+    f.wFt  = Math.min(roomW, Math.max(1, ft));
+    f.width = f.wFt * PPF;
     renderFixture(f);
     updateStats();
   });
@@ -657,7 +659,9 @@ input[type=range] { width: 100%; accent-color: #244d74; margin-top: 6px; }
     if (!selectedId) return;
     var f = fixtures.find(function(x) { return x.id === selectedId; });
     if (!f) return;
-    f.height = Math.min(roomH * PPF, Math.max(PPF, parseFloat(this.value || 1) * PPF));
+    var ft = parseFloat(this.value || 1);
+    f.hFt   = Math.min(roomH, Math.max(1, ft));
+    f.height = f.hFt * PPF;
     renderFixture(f);
     updateStats();
   });
