@@ -50,7 +50,7 @@ input:focus { border-color: #244d74; }
 .btn-danger { background: transparent; color: #ef4444; border: 1.5px solid #ef4444; border-radius: 10px; padding: 10px 20px; cursor: pointer; font-weight: 600; font-size: 13px; width: 100%; font-family: inherit; }
 #canvas-wrap { overflow: auto; }
 #canvas-meta { display: flex; gap: 16px; font-size: 11px; color: #64748b; margin-bottom: 8px; }
-#room-canvas { position: relative; border: 2px solid rgba(36,77,116,0.2); border-radius: 10px; background-color: #fafcff; background-image: linear-gradient(to right, rgba(36,77,116,0.09) 1px, transparent 1px), linear-gradient(to bottom, rgba(36,77,116,0.09) 1px, transparent 1px); background-size: 16px 16px; cursor: default; flex-shrink: 0; user-select: none; }
+#room-canvas { position: relative; border: 2px solid rgba(36,77,116,0.2); border-radius: 10px; background-color: #fafcff; background-image: linear-gradient(to right, rgba(36,77,116,0.09) 1px, transparent 1px), linear-gradient(to bottom, rgba(36,77,116,0.09) 1px, transparent 1px); background-size: 16px 16px; /* overridden dynamically */ cursor: default; flex-shrink: 0; user-select: none; }
 .room-lbl { position: absolute; top: 6px; right: 10px; font-size: 11px; color: #244d74; opacity: 0.45; pointer-events: none; }
 #canvas-empty { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; }
 #canvas-empty .ei { font-size: 40px; opacity: 0.25; margin-bottom: 8px; }
@@ -224,7 +224,7 @@ input[type=range] { width: 100%; accent-color: #244d74; margin-top: 6px; }
           </div>
         </div>
         <div id="canvas-meta">
-          <span>Grid: 1 cell = 1 ft</span>
+          <span id="grid-label">Grid: 1 cell = 1 ft</span>
           <span id="canvas-dims-label">Room: 40 ft × 25 ft</span>
         </div>
         <div id="room-canvas">
@@ -393,7 +393,7 @@ input[type=range] { width: 100%; accent-color: #244d74; margin-top: 6px; }
 
 <script>
 (function() {
-  var GRID = 16, PPF = 16;
+  var GRID = 16, PPF = 16, _basePPF = 16;
   var FIXTURES = [
     { type:"display",   label:"Display Case",        width:6,   height:2,   icon:"🪟", color:"#e8f4fd", border:"#244d74", payment:false, structure:false },
     { type:"shelving",  label:"Shelving",             width:8,   height:2,   icon:"📦", color:"#f0fdf4", border:"#22c55e", payment:false, structure:false },
@@ -465,15 +465,30 @@ input[type=range] { width: 100%; accent-color: #244d74; margin-top: 6px; }
   $('roomW').addEventListener('input', updateRoom);
   $('roomH').addEventListener('input', updateRoom);
 
+  function calcPPF() {
+    // Dynamically calculate PPF so the canvas always fits the available width
+    var wrap = $('canvas-wrap');
+    if (!wrap) return PPF;
+    var availW = wrap.clientWidth - 48; // subtract padding
+    var availH = Math.max(400, window.innerHeight - 260); // reasonable height
+    var ppfW = Math.floor(availW / roomW);
+    var ppfH = Math.floor(availH / roomH);
+    return Math.max(8, Math.min(ppfW, ppfH, 24)); // clamp between 8 and 24
+  }
+
   function updateRoom() {
     roomW = Math.max(10, parseInt($('roomW').value) || 10);
     roomH = Math.max(10, parseInt($('roomH').value) || 10);
+    PPF = calcPPF();
     var c = $('room-canvas');
     c.style.width  = (roomW * PPF) + 'px';
     c.style.height = (roomH * PPF) + 'px';
+    c.style.backgroundSize = PPF + 'px ' + PPF + 'px';
     $('room-label').textContent        = roomW + ' ft × ' + roomH + ' ft';
-    $('canvas-dims-label').textContent = 'Room: ' + roomW + ' ft × ' + roomH + ' ft';
+    $('canvas-dims-label').textContent = 'Room: ' + roomW + ' ft × ' + roomH + ' ft  ·  1 cell = 1 ft';
     $('stat-total-area').textContent   = (roomW * roomH) + ' sq ft';
+    // Re-render all fixtures at new scale
+    fixtures.forEach(function(f) { renderFixture(f); });
     updateStats();
   }
 
@@ -484,7 +499,8 @@ input[type=range] { width: 100%; accent-color: #244d74; margin-top: 6px; }
       color: item.color, border: item.border, icon: item.icon,
       x: snap(Math.max(0, roomW * PPF / 2 - w / 2)),
       y: snap(Math.max(0, roomH * PPF / 2 - h / 2)),
-      width: w, height: h, rotation: 0
+      width: w, height: h, rotation: 0,
+      wFt: item.width, hFt: item.height
     };
     fixtures.push(f);
     renderFixture(f);
@@ -514,6 +530,9 @@ input[type=range] { width: 100%; accent-color: #244d74; margin-top: 6px; }
       });
       $('room-canvas').appendChild(el);
     }
+    // Rescale to current PPF if ft dimensions stored
+    if (f.wFt) { f.width  = f.wFt * PPF; }
+    if (f.hFt) { f.height = f.hFt * PPF; }
     el.style.left            = f.x + 'px';
     el.style.top             = f.y + 'px';
     el.style.width           = f.width + 'px';
@@ -1158,8 +1177,18 @@ input[type=range] { width: 100%; accent-color: #244d74; margin-top: 6px; }
     ctx.closePath();
   }
 
+  // Recalculate canvas size on window resize
+  var _resizeTimer;
+  window.addEventListener('resize', function() {
+    clearTimeout(_resizeTimer);
+    _resizeTimer = setTimeout(function() {
+      updateRoom();
+    }, 150);
+  });
+
   buildLibrary();
-  updateRoom();
+  // Wait for layout to settle before first render
+  setTimeout(updateRoom, 50);
 
 })();
 </script>
