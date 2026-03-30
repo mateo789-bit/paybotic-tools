@@ -50,7 +50,7 @@ input:focus { border-color: #244d74; }
 .btn-danger { background: transparent; color: #ef4444; border: 1.5px solid #ef4444; border-radius: 10px; padding: 10px 20px; cursor: pointer; font-weight: 600; font-size: 13px; width: 100%; font-family: inherit; }
 #canvas-wrap { overflow: auto; }
 #canvas-meta { display: flex; gap: 16px; font-size: 11px; color: #64748b; margin-bottom: 8px; }
-#room-canvas { position: relative; border: 2px solid rgba(36,77,116,0.2); border-radius: 10px; background-color: #fafcff; background-image: linear-gradient(to right, rgba(36,77,116,0.09) 1px, transparent 1px), linear-gradient(to bottom, rgba(36,77,116,0.09) 1px, transparent 1px); background-size: 20px 20px; cursor: default; flex-shrink: 0; user-select: none; }
+#room-canvas { position: relative; border: 2px solid rgba(36,77,116,0.2); border-radius: 10px; background-color: #fafcff; background-image: linear-gradient(to right, rgba(36,77,116,0.09) 1px, transparent 1px), linear-gradient(to bottom, rgba(36,77,116,0.09) 1px, transparent 1px); background-size: 16px 16px; cursor: default; flex-shrink: 0; user-select: none; }
 .room-lbl { position: absolute; top: 6px; right: 10px; font-size: 11px; color: #244d74; opacity: 0.45; pointer-events: none; }
 #canvas-empty { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; }
 #canvas-empty .ei { font-size: 40px; opacity: 0.25; margin-bottom: 8px; }
@@ -185,12 +185,12 @@ input[type=range] { width: 100%; accent-color: #244d74; margin-top: 6px; }
         <div class="card">
           <div class="section-title">📐 Room Dimensions</div>
           <label class="field-label" for="roomW">Width (ft)</label>
-          <input type="number" id="roomW" min="10" value="40"/>
+          <input type="number" id="roomW" min="10" value="50"/>
           <label class="field-label" for="roomH">Depth (ft)</label>
-          <input type="number" id="roomH" min="10" value="25"/>
+          <input type="number" id="roomH" min="10" value="35"/>
           <div style="margin-top:12px;padding:10px;background:#f4f6f9;border-radius:8px;display:flex;justify-content:space-between;">
             <span style="font-size:13px;color:#64748b;">Total Area</span>
-            <span id="stat-total-area" style="font-size:13px;font-weight:700;color:#244d74;">1000 sq ft</span>
+            <span id="stat-total-area" style="font-size:13px;font-weight:700;color:#244d74;">1750 sq ft</span>
           </div>
         </div>
         <div class="card">
@@ -206,7 +206,7 @@ input[type=range] { width: 100%; accent-color: #244d74; margin-top: 6px; }
         </div>
         <div class="card">
           <div class="section-title">📊 Quick Stats</div>
-          <div class="stat-row"><span class="stat-label">Total Area</span><span class="stat-val" id="qs-area">1000 sq ft</span></div>
+          <div class="stat-row"><span class="stat-label">Total Area</span><span class="stat-val" id="qs-area">1750 sq ft</span></div>
           <div class="stat-row"><span class="stat-label">Fixtures Placed</span><span class="stat-val" id="qs-count">0</span></div>
           <div class="stat-row"><span class="stat-label">Fixture Footprint</span><span class="stat-val" id="qs-footprint">0.0 sq ft</span></div>
           <div class="stat-row"><span class="stat-label">Open Floor</span><span class="stat-val" id="qs-open">1000.0 sq ft</span></div>
@@ -224,7 +224,7 @@ input[type=range] { width: 100%; accent-color: #244d74; margin-top: 6px; }
           </div>
         </div>
         <div id="canvas-meta">
-          <span>Grid: 1 cell ≈ 1.4 ft</span>
+          <span>Grid: 1 cell = 1 ft</span>
           <span id="canvas-dims-label">Room: 40 ft × 25 ft</span>
         </div>
         <div id="room-canvas">
@@ -393,7 +393,7 @@ input[type=range] { width: 100%; accent-color: #244d74; margin-top: 6px; }
 
 <script>
 (function() {
-  var GRID = 20, PPF = 14;
+  var GRID = 16, PPF = 16;
   var FIXTURES = [
     { type:"display",   label:"Display Case",        width:6,   height:2,   icon:"🪟", color:"#e8f4fd", border:"#244d74", payment:false, structure:false },
     { type:"shelving",  label:"Shelving",             width:8,   height:2,   icon:"📦", color:"#f0fdf4", border:"#22c55e", payment:false, structure:false },
@@ -420,7 +420,7 @@ input[type=range] { width: 100%; accent-color: #244d74; margin-top: 6px; }
   };
 
   var fixtures = [], selectedId = null, dragging = null, dragOff = {x:0, y:0};
-  var roomW = 40, roomH = 25;
+  var roomW = 50, roomH = 35;
 
   function uid() { return Math.random().toString(36).slice(2,10); }
   function snap(v) { return Math.round(v / GRID) * GRID; }
